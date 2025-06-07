@@ -1,10 +1,10 @@
 import React from 'react'
-import Format from './Format';
+import AuthFormat from "./AuthFormat"
 
 const Signin = () => {
   return (
     <div>
-      <Format/>
+      <AuthFormat type={"Sign In"}/>
     </div>
   )
 }

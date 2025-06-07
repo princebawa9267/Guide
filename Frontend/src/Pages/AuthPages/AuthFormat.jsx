@@ -1,6 +1,10 @@
 import React from 'react'
+import Navbar from '../../Components/Navbar'
 
-const AuthFormat = () => {
+const AuthFormat = (props) => {
+
+  const authType = props.type;
+
   return (
     <div className='relative'>
       <svg style={{ position: "absolute", display: "block", transform: "scaleX(-1)", }} xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" viewBox="0 0 800 400" width={"100%"} height={"100vh"}>
@@ -9,8 +13,8 @@ const AuthFormat = () => {
       <div className='relative z-1 p-2 text-center'>
         <Navbar/>
       </div>
-      <div className='relative z-1 text-6xl top-14 left-20 font-extrabold text-white'>
-        Sign In
+      <div className='relative z-1 text-6xl mt-14 ml-20 font-extrabold text-white'>
+        {authType}
       </div>
     </div>
   )
