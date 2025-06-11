@@ -17,6 +17,7 @@ const Navbar = () => {
                                 <button type="button" className="flex md:me-0 focus:text-[#8a3ab9] text-[#766f6f] cursor-pointer" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
                                     <span className="sr-only">Open user menu</span>
                                     <FaUser className='h-5'/>
+                                    <FaUser className='h-5'/>
                                 </button>
                                 <div className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600" id="user-dropdown">
                                     <div className="px-4 py-3">
