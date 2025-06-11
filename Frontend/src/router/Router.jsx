@@ -4,6 +4,7 @@ import SearchedPage from '../Pages/SearchedPage'
 import Home from '../Pages/Home'
 import Signin from '../Pages/AuthPages/Signin'
 import Signup from '../Pages/AuthPages/Signup'
+import Collaborate from '../Pages/collaborate'
 
 const Router = () => {
   return (
@@ -18,4 +19,4 @@ const Router = () => {
   )
 }
 
-export default Router
+export default Router;

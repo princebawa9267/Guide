@@ -1,12 +1,13 @@
 import './App.css'
-import Home from './Pages/Home';
 import 'flowbite';
 import Router from './router/Router';
+import {ToastContainer} from "react-toastify"
 
 function App() {
 
   return (
     <>
+      <ToastContainer/>
       <Router/>
     </>
   )
