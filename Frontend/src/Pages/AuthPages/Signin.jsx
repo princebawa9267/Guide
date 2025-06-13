@@ -5,18 +5,20 @@ import AuthFormat from "./AuthFormat";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-import { Button, TextField } from '@mui/material';
+import { Button, CircularProgress, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 import SignInWithGoogle from './SignInWithGoogle';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../register';
-import { toast } from 'react-toastify';
+import { useAppDispatch, useAppSelector } from '../../state/store';
+import { loginUserWithEmailAndPassword } from '../../state/auth/authSlice';
 
 
 const Signin = () => {
 
   const navigate = useNavigate();
+
+  const dispatch = useAppDispatch();
+  const {auth} = useAppSelector(store=> store);
 
   const [timeLeft, setTimeLeft] = useState(60);
   const [otpSent, setOtpSent] = useState(false);
@@ -53,34 +55,14 @@ const Signin = () => {
       .required('Password is required'),
   });
 
-  // Here Login request is sent to the database with email
-  const loginRequest = () => {
-
-  }
-
-  // Login with google
-  const handleGoogleLogin = () => {
-    console.log("Google login");
-  }
-
-
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
     },
     validationSchema,
-    onSubmit: async (values) => {
-      try{
-        await signInWithEmailAndPassword(auth,formik.values.email,formik.values.password);
-        console.log("User logged in successfully");
-        toast.success("User logged in successfully");
-      }
-      catch(error){
-        console.log(error.message);
-        toast.error(error.message);
-      }
-      console.log("Form-Data ", values);
+    onSubmit: (values) => {
+      dispatch(loginUserWithEmailAndPassword({values : values , navigate : navigate}));
     }
   })
 
@@ -117,11 +99,11 @@ const Signin = () => {
           </div> */}
 
           <div>
-            <TextField fullWidth name='password' label="Password" value={formik.values.password} onChange={formik.handleChange} error={formik.touched.password && Boolean(formik.errors.password)} helperText={formik.touched.password && formik.errors.password} />
+            <TextField fullWidth type='password' name='password' label="Password" value={formik.values.password} onChange={formik.handleChange} error={formik.touched.password && Boolean(formik.errors.password)} helperText={formik.touched.password && formik.errors.password} />
           </div>
 
           <div>
-            <Button fullWidth variant='contained' onClick={formik.handleSubmit} sx={{ py: "11px" }}>Login</Button>
+            <Button fullWidth variant='contained' onClick={formik.handleSubmit} sx={{ py: "11px" }}>{auth.loading ? <CircularProgress size={24} color='white'/> : "Login"}</Button>
             <p className='flex justify-center mt-1 mb-1'>or</p>
             <SignInWithGoogle/>
             {/* Already have account */}
@@ -132,7 +114,7 @@ const Signin = () => {
           {/* <div className='flex justify-center'><p>Don't have account? <Button onClick={() => navigate("/signup")}>Signup</Button></p></div> */}
         </div>
         <div className='hidden md:block md:col-1 lg:col-2'>
-
+            {/* Here image can be placed.....👨‍💻 */}
         </div>
       </div>
     </div>

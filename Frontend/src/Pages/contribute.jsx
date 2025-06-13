@@ -5,7 +5,7 @@ import Typewriter from '../Components/typewriter'
 
 
 
-const contribute = () => {
+const Contribute = () => {
 
   return (
     <>
@@ -40,4 +40,4 @@ const contribute = () => {
   )
 }
 
-export default contribute
+export default Contribute
