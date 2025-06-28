@@ -8,4 +8,4 @@ const SearchedPage = () => {
   )
 }
 
-export default SearchedPage
+export default SearchedPage;

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useEffect } from 'react';
+import { useEffect,useState } from 'react';
 import { FaUser } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../state/store';
@@ -7,6 +7,8 @@ import { Button } from '@mui/material';
 import { logoutUser } from '../state/auth/authSlice';
 
 const Navbar = () => {
+
+    const [drawerToggle , setDrawerToggle] = useState(false);
 
     const { auth } = useAppSelector(store => store);
     const dispatch = useAppDispatch();
@@ -38,7 +40,7 @@ const Navbar = () => {
                                         (auth?.user?.photoURL) ? (<img src={auth?.user?.photoURL} alt='user-image' className="w-10 h-10 rounded-full" />) : (<FaUser className='h-5' />)
                                     }
                                 </button>
-                                <div className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm dark:bg-gray-700 dark:divide-gray-600" id="user-dropdown">
+                                <div className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm " id="user-dropdown">
                                     <div className="px-4 py-3">
                                         <span className="block text-sm text-gray-900 dark:text-white">{auth?.user?.displayName}</span>
                                         <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">{auth?.user?.email}</span>
@@ -88,6 +90,7 @@ const Navbar = () => {
                         </ul>
                     </div>
                 </div>
+
             </nav>
         </div>
     )

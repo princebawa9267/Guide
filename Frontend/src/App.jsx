@@ -12,6 +12,8 @@ import { setUser } from './state/auth/authSlice';
 
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './register';
+import Locations from './Pages/LocationSearch/Locations';
+import LocationSearchPage from './Pages/LocationSearch/LocationSearchPage';
 
 function App() {
 
@@ -62,8 +64,9 @@ function App() {
 
   return (
     <>
-      <ToastContainer />
-      <Router />
+      {/* <ToastContainer />
+      <Router /> */}
+      <LocationSearchPage/>
     </>
   )
 }

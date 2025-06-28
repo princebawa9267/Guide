@@ -6,6 +6,8 @@ import Signin from '../Pages/AuthPages/Signin'
 import Signup from '../Pages/AuthPages/Signup'
 import UserVerification from '../Pages/AuthPages/UserVerification'
 import Contribute from '../Pages/contribute'
+import Locations from '../Pages/LocationSearch/Locations'
+import LocationSearchPage from '../Pages/LocationSearch/LocationSearchPage'
 
 const Router = () => {
   return (
@@ -17,6 +19,7 @@ const Router = () => {
         <Route path='/signup' element={<Signup/>}></Route>
         <Route path='/contribute' element={<Contribute/>}></Route>
         <Route path='/user-verification' element={<UserVerification/>}></Route>
+        <Route path='/searched-location' element={<LocationSearchPage/>}></Route>
       </Routes>
     </div>
   )
