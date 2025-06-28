@@ -4,6 +4,7 @@ import Navbar from '../../Components/Navbar';
 import Typewriter from '../../Components/typewriter';
 import { data } from 'react-router-dom';
 import Locations from './Locations';
+import Footer from '../../Components/Footer';
 
 const LocationSearchPage = ({heading,items}) => {
 
@@ -46,6 +47,7 @@ const LocationSearchPage = ({heading,items}) => {
       </div>
 
       <Locations/>
+      <Footer/>
     </div>
   );
 };

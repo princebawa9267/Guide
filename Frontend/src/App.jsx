@@ -3,18 +3,12 @@ import 'flowbite';
 import Home from './Pages/Home';
 import Contribute from './Pages/contribute';
 import Selected_item from './Pages/selected_item';
-import Approuter from './router/Approuter';
-
-
 import { useEffect } from 'react';
-
 import { useNavigate } from 'react-router-dom';
 import Router from './router/Router';
-
 import { ToastContainer } from "react-toastify"
 import { useAppDispatch } from './state/store';
 import { setUser } from './state/auth/authSlice';
-
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './register';
 import Locations from './Pages/LocationSearch/Locations';
@@ -69,13 +63,12 @@ function App() {
 
   return (
     <>
-      {/* <ToastContainer />
-      <Router /> */}
+      <ToastContainer />
+      {/* <Router /> */}
       <LocationSearchPage/>
       {/* <Home/> */}
       {/* <Contribute/> */}
       {/* <Selected_item/> */}
-      <Approuter/>
     </>
   )
 }
