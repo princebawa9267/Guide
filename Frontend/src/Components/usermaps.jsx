@@ -19,11 +19,11 @@ const Usermaps = () => {
 
   useEffect(() => {
     if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
+      navigator.geolocation.getCurrentPosition(  //navigator.geolocation.getCurrentPosition html5 service geolocation is used to obtain longitude and latitude
         (pos) => {
           const userLat = pos.coords.latitude;
           const userLng = pos.coords.longitude;
-          setPosition([userLat, userLng]);
+          setPosition([userLat, userLng]);  //long and lat are stored in the state
           console.log('Latitude:', userLat);
           console.log('Longitude:', userLng);
         },

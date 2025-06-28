@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import thinkingImg from '/src/assets/Thinking face-rafiki.png';
 
 const Userreview = () => {
-  const [reviews, setReviews] = useState([]); // Array to store user reviews
+  const [reviews, setReviews] = useState(["apple","apple","apple","apple","apple","apple","apple","apple","apple","apple",]); // Array to store user reviews
 
   return (
     <div className="w-[90vw] max-w-6xl h-auto rounded-3xl nunito mx-auto mt-10 mb-10 bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] shadow-2xl cursor-pointer p-6">

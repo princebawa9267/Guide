@@ -8,6 +8,7 @@ import UserVerification from '../Pages/AuthPages/UserVerification'
 import Contribute from '../Pages/contribute'
 import Locations from '../Pages/LocationSearch/Locations'
 import LocationSearchPage from '../Pages/LocationSearch/LocationSearchPage'
+import Selected_item from '../Pages/selected_item'
 
 const Router = () => {
   return (
@@ -20,6 +21,7 @@ const Router = () => {
         <Route path='/contribute' element={<Contribute/>}></Route>
         <Route path='/user-verification' element={<UserVerification/>}></Route>
         <Route path='/searched-location' element={<LocationSearchPage/>}></Route>
+        <Route path='/selected-item' element={<Selected_item/>}></Route>
       </Routes>
     </div>
   )
