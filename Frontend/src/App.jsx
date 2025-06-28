@@ -1,5 +1,10 @@
 import './App.css'
 import 'flowbite';
+import Home from './Pages/Home';
+import Contribute from './Pages/contribute';
+import Selected_item from './Pages/selected_item';
+import Approuter from './router/Approuter';
+
 
 import { useEffect } from 'react';
 
@@ -67,6 +72,10 @@ function App() {
       {/* <ToastContainer />
       <Router /> */}
       <LocationSearchPage/>
+      {/* <Home/> */}
+      {/* <Contribute/> */}
+      {/* <Selected_item/> */}
+      <Approuter/>
     </>
   )
 }
