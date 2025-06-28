@@ -3,7 +3,7 @@ import React from 'react'
 const Typewriter = (props) => {
   return (
     <div className='text-white text-3xl font-semibold font-nunito'>
-        <p className='overflow-x-hidden whitespace-nowrap border-r-2 border-white w-fit' style={{animation: 'typing 4s steps(40, end), blink 0.75s step-end infinite',
+        <p className='overflow-x-hidden whitespace-nowrap border-r-2 border-white w-fit' style={{animation: 'typing 6s steps(40, end), blink 0.75s step-end infinite',
           whiteSpace: 'nowrap',
           overflow: 'hidden',}}>{props.line}</p>
 
