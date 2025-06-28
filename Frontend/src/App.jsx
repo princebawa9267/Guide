@@ -45,11 +45,11 @@ function App() {
             else if (providerId === "google.com") {
               console.log("User Details with google", user);
               dispatch(setUser({
-                uid: user.uid,
-                email: user.email,
-                displayName: user.displayName,
-                emailVerified: user.emailVerified,
-                photoURL: user.photoURL
+                uid: user?.uid,
+                email: user?.email,
+                displayName: user?.displayName,
+                emailVerified: user?.emailVerified,
+                photoURL: user?.photoURL
               })) 
             }
           }
@@ -64,9 +64,9 @@ function App() {
 
   return (
     <>
-      {/* <ToastContainer />
-      <Router /> */}
-      <LocationSearchPage/>
+      <ToastContainer />
+      <Router />
+      {/* <LocationSearchPage/> */}
     </>
   )
 }

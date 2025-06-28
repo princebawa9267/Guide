@@ -5,6 +5,7 @@ const updateRestaurantStats = require('../utils/updateRestaurantStats');
 const { generateReviewId, generateRestaurantId } = require('../utils/idGenerators');
 
 // Add review
+// https://localhost:3000/reviews
 router.post('/', async (req, res) => {
   const {
     user_id, restaurant_name, city,
