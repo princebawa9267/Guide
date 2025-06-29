@@ -69,7 +69,8 @@ const Selected_item_map = ({ latitude, longitude }) => {
                 }
             );
         } else {
-            console.log('Geolocation is not supported.');
+            console.log('Geolocation is not supported.'),
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
         }
     }, []);
 

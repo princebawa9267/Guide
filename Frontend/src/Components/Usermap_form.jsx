@@ -30,10 +30,14 @@ const Usermap_form = ({ onLocationSelect, setFieldValue }) => {
                     setPosition([userLat, userLng]);
                     console.log('Latitude:', userLat);
                     console.log('Longitude:', userLng);
+                    
                 },
                 (err) => {
-                    console.error('Error fetching location:', err);
+                    console.error('Error fetching location:', err),
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    
                 }
+                
             );
         } else {
             console.log('Geolocation is not supported.');
