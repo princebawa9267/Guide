@@ -14,9 +14,12 @@ router.post('/', async (req, res) => {
     review_text,
     price_range,
     food_quality,
+    latitude,
+    longitude,
     cleanliness_score,
     service_score,
     location_of_restaurant,
+
     open_hours,
     images,
     best_dishes = []
@@ -40,6 +43,8 @@ router.post('/', async (req, res) => {
       avg_food_quality: food_quality,
       avg_service_score: service_score,
       price_range,
+      longitude,
+      latitude,
       best_dishes,
       review_count: 1,
     });
@@ -56,6 +61,8 @@ router.post('/', async (req, res) => {
     review_text,
     price_range,
     food_quality,
+    longitude,
+    latitude,
     cleanliness_score,
     service_score,
     upvotes: 0,

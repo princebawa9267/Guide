@@ -32,6 +32,8 @@ const Contribute = () => {
       cleanliness_score: values.Cleanliness,
       service_score: values.Service,
       location_of_restaurant: values.City,
+      latitude:values.latitude,
+      longitude:values.longitude,
       open_hours: values.Open_Hours,
       images: values.Images,
       best_dishes: [values.Popular_Dish], // Assuming best_dishes is an array
@@ -119,6 +121,8 @@ const Contribute = () => {
             if (!values.Your_Experience) errors.Your_Experience = 'Your Experience is required';
             if (!values.Price_Level) errors.Price_Level = 'Price Level is required';
             if (!values.Food_Quality) errors.Food_Quality = 'Food Quality is required';
+            if (!values.latitude) errors.longitude = 'longitude is required';
+            if (!values.longitude) errors.latitude = 'latitude is required';
             if (!values.Cleanliness) errors.Cleanliness = 'Cleanliness is required';
             if (!values.Service) errors.Service = 'Service is required';
             if (!values.Popular_Dish) errors.Popular_Dish = 'Popular Dish is required';
