@@ -14,11 +14,12 @@ router.post('/', async (req, res) => {
     review_text,
     price_range,
     food_quality,
+    latitude,
+    longitude,
     cleanliness_score,
     service_score,
-    location_of_restaurant,
     open_hours,
-    images,
+    images = [],
     best_dishes = []
   } = req.body;
 
@@ -39,7 +40,10 @@ router.post('/', async (req, res) => {
       avg_cleanliness_score: cleanliness_score,
       avg_food_quality: food_quality,
       avg_service_score: service_score,
+      avg_review_score: (food_quality + cleanliness_score + service_score) / 3,
       price_range,
+      longitude,
+      latitude,
       best_dishes,
       review_count: 1,
     });
@@ -56,11 +60,12 @@ router.post('/', async (req, res) => {
     review_text,
     price_range,
     food_quality,
+    longitude,
+    latitude,
     cleanliness_score,
     service_score,
     upvotes: 0,
     upvoted_by: [],
-    location_of_restaurant,
     best_dishes
   });
 
