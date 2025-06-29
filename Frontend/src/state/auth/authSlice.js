@@ -159,6 +159,7 @@ const initialState = {
     user: null,
     loading: false,
     error: null,
+    dataLoaded: false,
 }
 
 const authSlice = createSlice({
@@ -183,11 +184,13 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.user = action.payload;
                 state.isLoggedIn = true;
+                state.dataLoaded = true;
             })
             .addCase(createAccountWithEmailAndPassword.rejected, (state, action) => {
                 state.loading = false;
                 state.user = null;
                 state.isLoggedIn = false;
+                state.dataLoaded = false;
                 state.error = action.payload
             })
             .addCase(loginUserWithEmailAndPassword.pending, (state) => {

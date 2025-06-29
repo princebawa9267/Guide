@@ -60,7 +60,7 @@ const Usermap_form = ({ onLocationSelect, setFieldValue }) => {
     return (
         <>
             {position ? (
-                <MapContainer center={position} zoom={13} className="w-full h-full rounded-b-3xl">
+                <MapContainer  center={position} zoom={13} className=" w-full h-full rounded-b-3xl">
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     <MapClickHandler />
 
