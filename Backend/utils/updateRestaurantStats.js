@@ -72,6 +72,7 @@ const updateRestaurantStats = async (restaurant_id) => {
     latitude: median_lat,
     longitude: median_long,
     best_dishes: Array.from(allDishes),
+    reviews_count: reviews.length,
   };
 
   if (summary) {
