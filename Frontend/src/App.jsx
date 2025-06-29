@@ -29,7 +29,17 @@ function App() {
           else {
             navigate("/")
             const providerId = user.providerData[0]?.providerId;
-            if (providerId === "password") {
+            if (providerId === "google.com") {
+              console.log("User Details with google", user);
+              dispatch(setUser({
+                uid: user?.uid,
+                email: user?.email,
+                displayName: user?.displayName,
+                emailVerified: user?.emailVerified,
+                photoURL: user?.photoURL
+              }))
+            }
+            else if (providerId === "password") {
               console.log("User Details ", user);
               const docRef = doc(db, "Users", String(user.uid));
               const docSnap = await getDoc(docRef);
@@ -39,16 +49,6 @@ function App() {
                 displayName: `${docSnap.data().firstName} ${docSnap.data().lastName}`,
                 emailVerified: user.emailVerified,
                 photoURL: user.photoURL
-              }))
-            }
-            else if (providerId === "google.com") {
-              console.log("User Details with google", user);
-              dispatch(setUser({
-                uid: user?.uid,
-                email: user?.email,
-                displayName: user?.displayName,
-                emailVerified: user?.emailVerified,
-                photoURL: user?.photoURL
               }))
             }
           }

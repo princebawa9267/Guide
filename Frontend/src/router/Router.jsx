@@ -18,6 +18,7 @@ const Router = () => {
         <Route path='/searched-page' element={<SearchedPage/>}></Route>
         <Route path='/signin' element={<Signin/>}></Route>
         <Route path='/signup' element={<Signup/>}></Route>
+        {/* <Route */}
         <Route path='/contribute' element={<Contribute/>}></Route>
         <Route path='/user-verification' element={<UserVerification/>}></Route>
         <Route path='/searched-location' element={<LocationSearchPage/>}></Route>

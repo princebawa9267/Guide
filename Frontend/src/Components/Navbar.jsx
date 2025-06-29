@@ -1,5 +1,5 @@
 import React from 'react'
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaUser } from "react-icons/fa";
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../state/store';
@@ -8,8 +8,23 @@ import { logoutUser } from '../state/auth/authSlice';
 
 const Navbar = () => {
 
-    const [drawerToggle , setDrawerToggle] = useState(false);
+    const [drawerToggle, setDrawerToggle] = useState(false);
 
+    // User image URL state
+    // This will hold the converted Blob URL for the user image
+    const [userImageUrl, setUserImageUrl] = useState(null);
+
+    // Toggle for navabar profile section
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const handleMenuToggle = () => {
+        console.log("Menu toggled");
+        setMenuOpen(prevState => !prevState);
+        console.log("Menu open state:", menuOpen);
+    };
+
+    // Getting value form the redux store
+    // This will be used to get the user details
     const { auth } = useAppSelector(store => store);
     const dispatch = useAppDispatch();
 
@@ -18,8 +33,36 @@ const Navbar = () => {
     // Logout user
     const logout = () => {
         dispatch(logoutUser({ dispatch: dispatch }));
+        setMenuOpen(false); // Close the menu on logout
         console.log("Logout");
     }
+
+    // Conversion on image to Blob so error does not occur with image URL
+    const fetchImageAsBlob = async (imageUrl) => {
+        try {
+            const response = await fetch(imageUrl);
+            if (!response.ok) {
+                throw new Error('Failed to fetch image');
+            }
+            const blob = await response.blob();
+            const objectUrl = URL.createObjectURL(blob);
+            return objectUrl;
+        } catch (error) {
+            console.error("Error fetching image:", error);
+            return null;
+        }
+    };
+
+    useEffect(() => {
+        if (auth?.user?.photoURL) {
+            // Fetch and set image if URL is available
+            fetchImageAsBlob(auth.user.photoURL).then((objectUrl) => {
+                if (objectUrl) {
+                    setUserImageUrl(objectUrl);
+                }
+            });
+        }
+    }, [auth?.user?.photoURL]);
 
     return (
         <div>
@@ -31,43 +74,56 @@ const Navbar = () => {
 
                         <span className="self-center text-2xl font-semibold whitespace-nowrap text-[#766f6f]">Guide</span>
                     </Link>
-                    <div className='md:order-2'>
+                    <div className='md:order-2 relative'>
                         {
-                            (!auth.isLoggedIn) ? <Button sx={{ textTransform: 'none' }} onClick={() => navigate("/signin")}>Login</Button> : <div className="flex items-center space-x-3 md:space-x-0 rtl:space-x-reverse mr-4">
-                                <button type="button" className="flex md:me-0 focus:text-[#8a3ab9] text-[#766f6f] cursor-pointer" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
-                                    <span className="sr-only">Open user menu</span>
-                                    {
-                                        (auth?.user?.photoURL) ? (<img src={auth?.user?.photoURL} alt='user-image' className="w-10 h-10 rounded-full" />) : (<FaUser className='h-5' />)
-                                    }
-                                </button>
-                                <div className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm " id="user-dropdown">
-                                    <div className="px-4 py-3">
-                                        <span className="block text-sm text-gray-900 dark:text-white">{auth?.user?.displayName}</span>
-                                        <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">{auth?.user?.email}</span>
-                                    </div>
-                                    <ul className="py-2" aria-labelledby="user-menu-button">
-                                        <li>
-                                            <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Dashboard</Link>
-                                        </li>
-                                        <li>
-                                            <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</Link>
-                                        </li>
-                                        <li>
-                                            <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Earnings</Link>
-                                        </li>
-                                        <li>
-                                            <Button variant="contained" color='error' sx={{ textTransform: "none" }} onClick={logout}>Logout</Button>
-                                        </li>
-                                    </ul>
+                            (!auth.isLoggedIn) ?
+                                <Button variant="contained"
+                                    sx={{ textTransform: 'none', backgroundColor: "#8a3ab9" }}
+                                    onClick={() => navigate("/signin")}>Login</Button>
+                                :
+                                <div className="flex items-center space-x-3 md:space-x-0 rtl:space-x-reverse mr-4">
+                                    <button
+                                        type="button"
+                                        onClick={handleMenuToggle}
+                                        className="flex md:me-0 focus:text-[#8a3ab9] text-[#766f6f] cursor-pointer"
+                                    >
+                                        <span className="sr-only">Open user menu</span>
+                                        {
+                                            (auth.user.photoURL) ? (<img src={userImageUrl} alt='user-image' className="w-10 h-10 rounded-full" />) : (<FaUser className='h-5' />)
+                                        }
+                                    </button>
                                 </div>
-                                <button data-collapse-toggle="navbar-user" type="button" className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-user" aria-expanded="false">
-                                    <span className="sr-only">Open main menu</span>
-                                    <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h15M1 7h15M1 13h15" />
-                                    </svg>
-                                </button>
-                            </div>
                         }
+
+                        <div
+                            className={`z-50 my-4 absolute right-3.5 text-base list-none bg-[#8a3ab9] divide-y divide-gray-100 rounded-lg shadow-sm ${menuOpen ? '' : 'hidden'}`}
+                            id="user-dropdown">
+                            <div className="px-4 py-3">
+                                <span className="block text-sm text-gray-900 dark:text-white">{auth?.user?.displayName}</span>
+                                <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">{auth?.user?.email}</span>
+                            </div>
+                            <ul className="py-2" aria-labelledby="user-menu-button">
+                                <li>
+                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Dashboard</Link>
+                                </li>
+                                <li>
+                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</Link>
+                                </li>
+                                <li>
+                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Earnings</Link>
+                                </li>
+                                <li>
+                                    <Button variant="contained" color='error' sx={{ textTransform: "none" }} onClick={logout}>Logout</Button>
+                                </li>
+                            </ul>
+                        </div>
+                        <button data-collapse-toggle="navbar-user" type="button" className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-user" aria-expanded="false">
+                            <span className="sr-only">Open main menu</span>
+                            <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h15M1 7h15M1 13h15" />
+                            </svg>
+                        </button>
+                        {/* </div> */}
 
                     </div>
                     <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-user">

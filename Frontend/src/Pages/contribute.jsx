@@ -8,11 +8,62 @@ import Emojis from '../Components/Emojis';
 import Form_length from '../Components/form_length';
 import Usermap_form from '../Components/Usermap_form';
 import { useState } from 'react';
+import { useAppSelector } from '../state/store';
 
 const Contribute = () => {
 
-  const [markedposition, setmarkedposition] = useState(null)
+  const [markedposition, setmarkedposition] = useState(null);
 
+  // Getting user id
+  const {auth} = useAppSelector(store=> store);
+
+  // New handleSubmit function to handle the API call
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    console.log('Submitting:', values);
+
+  // Prepare the payload for the API call
+    const payload = {
+      name: values.Name,
+      locality: values.Location,
+      user_id: auth.user.uid, // Replace this with actual user ID logic from your app
+      review_text: values.Your_Experience,
+      price_range: values.Price_Level,
+      food_quality: values.Food_Quality,
+      cleanliness_score: values.Cleanliness,
+      service_score: values.Service,
+      location_of_restaurant: values.City,
+      open_hours: values.Open_Hours,
+      images: values.Images,
+      best_dishes: [values.Popular_Dish], // Assuming best_dishes is an array
+    };
+
+    try {
+      // Make API call to backend
+      const response = await fetch('http://localhost:3000/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Submitted successfully!");
+        console.log('API Response:', result);
+        resetForm(); // Reset the form if successful
+      } else {
+        alert(`Failed to submit. ${result.error || 'Something went wrong'}`);
+      }
+
+    } catch (error) {
+      console.error('Error while submitting:', error);
+      alert("Something went wrong. Please try again later.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
 
   return (
@@ -58,7 +109,7 @@ const Contribute = () => {
           initialValues={{
             Name: "", Location: "", City: "", latitude: '', longitude: '', Popular_Dish: "", Price_Level: "",
             Food_Quality: "", Cleanliness: "", Service: "",
-            Open_Hours: "", Iamges: "", Your_Experience: ""
+            Open_Hours: "", Images:[] , Your_Experience: ""
           }}
           validate={values => {
             const errors = {};
@@ -73,14 +124,7 @@ const Contribute = () => {
             if (!values.Popular_Dish) errors.Popular_Dish = 'Popular Dish is required';
             return errors;
           }}
-          onSubmit={(values, { setSubmitting, resetForm }) => {
-            setTimeout(() => {
-              alert("Submitted successfully!");
-              resetForm();
-              console.log('Submitted:', values);
-              setSubmitting(false);
-            }, 500);
-          }}
+          onSubmit={handleSubmit} // Changed from original to use handleSubmit
         >
           {({ isSubmitting, setFieldValue }) => (
             <Form className="w-[90vw] max-w-7xl mb-10 bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-rows-6 gap-6 text-xl p-8">
@@ -165,9 +209,9 @@ const Contribute = () => {
               {/* Images */}
               <label className='w-full m-3 p-4 cursor-pointer rounded-3xl col-span-2 text-xl shadow-xl bg-white hover:shadow-2xl transition-shadow duration-300'>
                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Images :</span>
-                <Field name="Iamges">
+                <Field name="Images">
                   {({ form }) => {
-                    const images = form.values.Iamges || [];
+                    const images = form.values.Images || [];
 
                     const handleImageUpload = async (event) => {
                       const file = event.currentTarget.files[0];
@@ -188,7 +232,7 @@ const Contribute = () => {
 
                       const cloudinaryData = await res.json();
                       const newImages = [...images, cloudinaryData.secure_url];
-                      form.setFieldValue("Iamges", newImages);
+                      form.setFieldValue("Images", newImages);
                     };
 
                     return (
@@ -216,7 +260,7 @@ const Contribute = () => {
                         {/* Optional Remove Button */}
                         <button
                           type="button"
-                          onClick={() => form.setFieldValue("Iamges", [])}
+                          onClick={() => form.setFieldValue("Images", [])}
                           className="text-sm text-red-500 hover:underline"
                         >
                           Remove all images
@@ -246,7 +290,7 @@ const Contribute = () => {
               </div>
 
 
-              {/* iepn hours */}
+              {/* open hours */}
               <label className='flex flex-col justify-center gap-2 w-full m-3 p-4 h-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300'>
                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Open Hours :</span>
                 <Field type="text" name="Open_Hours" className="w-full border-none text-[#29264A] bg-transparent text-lg px-2 focus:ring-[#8a3ab9] placeholder-gray-400 focus:outline-none" placeholder="Enter Open Hours" />
@@ -272,3 +316,122 @@ const Contribute = () => {
 };
 
 export default Contribute;
+
+
+
+// import React, { useState } from 'react';
+// import { Formik, Form, Field, ErrorMessage } from 'formik';
+
+// const Contribute = () => {
+//   const [markedposition, setmarkedposition] = useState(null);
+
+//   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+//     console.log('Submitting:', values);
+    
+//     // Prepare the payload for the API call
+//     const payload = {
+//       name: values.Name,
+//       locality: values.Location,
+//       user_id: "user123", // Replace this with actual user ID logic from your app
+//       review_text: values.Your_Experience,
+//       price_range: values.Price_Level,
+//       food_quality: values.Food_Quality,
+//       cleanliness_score: values.Cleanliness,
+//       service_score: values.Service,
+//       location_of_restaurant: values.City,
+//       open_hours: values.Open_Hours,
+//       images: values.Images,
+//       best_dishes: [values.Popular_Dish], // Assuming best_dishes is an array
+//     };
+
+//     try {
+//       // Make API call to backend
+//       const response = await fetch('http://localhost:5000/api/restaurant', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(payload),
+//       });
+
+//       const result = await response.json();
+
+//       if (response.ok) {
+//         alert("Submitted successfully!");
+//         console.log('API Response:', result);
+//         resetForm(); // Reset the form if successful
+//       } else {
+//         alert(`Failed to submit. ${result.error || 'Something went wrong'}`);
+//       }
+
+//     } catch (error) {
+//       console.error('Error while submitting:', error);
+//       alert("Something went wrong. Please try again later.");
+//     } finally {
+//       setSubmitting(false);
+//     }
+//   };
+
+//   return (
+//     <Formik
+//       initialValues={{
+//         Name: "", Location: "", City: "", latitude: '', longitude: '', Popular_Dish: "", Price_Level: "",
+//         Food_Quality: "", Cleanliness: "", Service: "", Open_Hours: "", Images: [], Your_Experience: ""
+//       }}
+//       validate={values => {
+//         const errors = {};
+//         if (!values.Name) errors.Name = 'Name is required';
+//         if (!values.Location) errors.Location = 'Location is required';
+//         if (!values.City) errors.City = 'City name is required';
+//         if (!values.Your_Experience) errors.Your_Experience = 'Your Experience is required';
+//         if (!values.Price_Level) errors.Price_Level = 'Price Level is required';
+//         if (!values.Food_Quality) errors.Food_Quality = 'Food Quality is required';
+//         if (!values.Cleanliness) errors.Cleanliness = 'Cleanliness is required';
+//         if (!values.Service) errors.Service = 'Service is required';
+//         if (!values.Popular_Dish) errors.Popular_Dish = 'Popular Dish is required';
+//         return errors;
+//       }}
+//       onSubmit={handleSubmit}
+//     >
+//       {({ isSubmitting, setFieldValue }) => (
+//         <Form className="w-[90vw] max-w-7xl mb-10 bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-rows-6 gap-6 text-xl p-8">
+//           {/* Name */}
+//           <label className="flex flex-col justify-center gap-2 w-full m-3 p-4 h-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">
+//             <span className="text-[#8a3ab9] font-semibold tracking-wide">Name :</span>
+//             <Field type="text" name="Name" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter Location name" />
+//             <div className='h-1 rounded-full w-full bg-[#8a3ab9]'></div>
+//             <ErrorMessage name="Name" component="div" className="text-red-500 text-sm" />
+//           </label>
+
+//           {/* Location */}
+//           <label className='w-full m-3 p-4 row-span-2 rounded-3xl cursor-pointer col-span-2 text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300'>
+//             <div className='w-full flex gap-5'>
+//               <div className='w-1/2'>
+//                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Location :</span>
+//                 <Field type="text" name="Location" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter Location" />
+//                 <div className='h-1 mt-2 rounded-full w-full bg-[#8a3ab9]'></div>
+//                 <ErrorMessage name="Location" component="div" className="text-red-500 text-sm" /></div>
+//               <div className='w-1/2'>
+//                 <span className="text-[#8a3ab9] font-semibold tracking-wide">City :</span>
+//                 <Field type="text" name="City" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter City name" />
+//                 <div className='h-1 mt-2 rounded-full w-full bg-[#8a3ab9]'></div>
+//                 <ErrorMessage name="City" component="div" className="text-red-500 text-sm" />
+//               </div>
+//             </div>
+//           </label>
+
+//           {/* Add other fields like Popular Dish, Experience, etc. here... */}
+
+//           {/* Submit Button */}
+//           <div className='flex justify-center items-center col-span-3 mt-4 cursor-pointer'>
+//             <button type="submit" disabled={isSubmitting} className="bg-[#8a3ab9] hover:bg-[#7326a3] text-white px-6 py-3 rounded-full shadow-xl text-lg cursor-pointer transition-all duration-300">
+//               Submit
+//             </button>
+//           </div>
+//         </Form>
+//       )}
+//     </Formik>
+//   );
+// };
+
+// export default Contribute;

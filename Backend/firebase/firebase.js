@@ -1,5 +1,7 @@
 import admin from 'firebase-admin';
-import serviceAccount from '../serviceAccountKey.json' assert { type: 'json' };
+
+// Dynamically import the service account JSON file
+import { default as serviceAccount } from '../serviceAccountKey.json' with { type: 'json' };
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -7,4 +9,3 @@ admin.initializeApp({
 
 const db = admin.firestore();
 export default db;
-// This file initializes Firebase Admin SDK with Firestore.
