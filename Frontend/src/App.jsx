@@ -13,11 +13,17 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './register';
 import Locations from './Pages/LocationSearch/Locations';
 import LocationSearchPage from './Pages/LocationSearch/LocationSearchPage';
+import PrivateRoute from './router/PrivateRoute';
+import UserVerification from './Pages/AuthPages/UserVerification';
 
 function App() {
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo({top : 0, behavior : "smooth"});
+  },[location.pathname])
 
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
@@ -65,6 +71,8 @@ function App() {
     <>
       <ToastContainer />
       <Router />
+      {/* <UserVerification/> */}
+      {/* <PrivateRoute/> */}
       {/* <LocationSearchPage/> */}
       {/* <Home/> */}
       {/* <Contribute/> */}

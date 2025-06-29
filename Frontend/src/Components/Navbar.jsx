@@ -38,8 +38,10 @@ const Navbar = () => {
     }
 
     // Conversion on image to Blob so error does not occur with image URL
-    const fetchImageAsBlob = async (imageUrl) => {
-        try {
+    const fetchImageAsBlob = async (imageUrl,retries = 3, delay = 1000) => {
+
+        for(let attempt = 0; attempt < retries; attempt++){
+            try {
             const response = await fetch(imageUrl);
             if (!response.ok) {
                 throw new Error('Failed to fetch image');
@@ -49,8 +51,14 @@ const Navbar = () => {
             return objectUrl;
         } catch (error) {
             console.error("Error fetching image:", error);
-            return null;
+            if (error.message.includes('429') && attempt < retries - 1) {
+                console.log("Rate limit hit, retrying...");
+                await new Promise((resolve) => setTimeout(resolve, delay));  // Retry delay
+            }
         }
+        }
+
+        
     };
 
     useEffect(() => {
@@ -65,8 +73,8 @@ const Navbar = () => {
     }, [auth?.user?.photoURL]);
 
     return (
-        <div>
-            <nav className="bg-transparent border-gray-200 dark:bg-transparent ">
+        <div className='flex justify-center'>
+            <nav className="sticky z-999 w-[95vw] bg-transparent border-gray-200 dark:bg-transparent">
                 <div className="max-w-screen-xl flex shadow-2xl bg-white rounded-3xl flex-wrap items-center justify-between mx-auto mt-8 p-2">
                     <Link className="flex items-center space-x-3 rtl:space-x-reverse">
 
@@ -96,21 +104,21 @@ const Navbar = () => {
                         }
 
                         <div
-                            className={`z-50 my-4 absolute right-3.5 text-base list-none bg-[#8a3ab9] divide-y divide-gray-100 rounded-lg shadow-sm ${menuOpen ? '' : 'hidden'}`}
+                            className={`z-50 my-4 absolute right-3.5 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm ${menuOpen ? '' : 'hidden'}`}
                             id="user-dropdown">
                             <div className="px-4 py-3">
-                                <span className="block text-sm text-gray-900 dark:text-white">{auth?.user?.displayName}</span>
-                                <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">{auth?.user?.email}</span>
+                                <span className="block text-sm text-gray-900 ">{auth?.user?.displayName}</span>
+                                <span className="block text-sm  text-gray-500">{auth?.user?.email}</span>
                             </div>
                             <ul className="py-2" aria-labelledby="user-menu-button">
                                 <li>
-                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Dashboard</Link>
+                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-500">Dashboard</Link>
                                 </li>
                                 <li>
-                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</Link>
+                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-500">Settings</Link>
                                 </li>
                                 <li>
-                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Earnings</Link>
+                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-500">Earnings</Link>
                                 </li>
                                 <li>
                                     <Button variant="contained" color='error' sx={{ textTransform: "none" }} onClick={logout}>Logout</Button>

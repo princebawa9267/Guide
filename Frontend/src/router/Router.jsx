@@ -9,8 +9,13 @@ import Contribute from '../Pages/contribute'
 import Locations from '../Pages/LocationSearch/Locations'
 import LocationSearchPage from '../Pages/LocationSearch/LocationSearchPage'
 import Selected_item from '../Pages/selected_item'
+import PrivateRoute from './PrivateRoute'
+import { useAppSelector } from '../state/store'
 
 const Router = () => {
+
+  const {auth} = useAppSelector(store => store);
+
   return (
     <div>
       <Routes>
@@ -19,7 +24,11 @@ const Router = () => {
         <Route path='/signin' element={<Signin/>}></Route>
         <Route path='/signup' element={<Signup/>}></Route>
         {/* <Route */}
-        <Route path='/contribute' element={<Contribute/>}></Route>
+        <Route path='/contribute' element={
+            <PrivateRoute>
+              <Contribute/>
+            </PrivateRoute>
+          }></Route>
         <Route path='/user-verification' element={<UserVerification/>}></Route>
         <Route path='/searched-location' element={<LocationSearchPage/>}></Route>
         <Route path='/selected-item' element={<Selected_item/>}></Route>
