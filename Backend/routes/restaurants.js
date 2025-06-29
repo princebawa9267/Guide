@@ -46,7 +46,7 @@ router.get('/', async (req, res) => {
   }
 
   // ORDER BY avg_rating_score DESC
-  query = query.orderBy('avg_rating_score', 'desc');
+  // query = query.orderBy('avg_rating_score', 'desc');
 
   try {
     const snapshot = await query.get();
