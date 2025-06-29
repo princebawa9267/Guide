@@ -41,6 +41,7 @@ const Contribute = () => {
 
     try {
       // Make API call to backend
+      console.log('Payload:', payload);
       const response = await fetch('http://localhost:3000/reviews', {
         method: 'POST',
         headers: {

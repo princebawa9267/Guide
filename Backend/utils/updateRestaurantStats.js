@@ -31,12 +31,13 @@ const updateRestaurantStats = async (restaurant_id) => {
   const food_quality = avg(reviews.map(r => Number(r.food_quality || 0)));
   const cleaniness_score = avg(reviews.map(r => Number(r.cleaniness_score || 0)));
   const service_score = avg(reviews.map(r => Number(r.service_score || 0)));
+  const avg_review_score = (food_quality + cleaniness_score + service_score) / 3;
 
   const latitudes = reviews
-    .map(r => r.location_of_restaurant?.lat)
+    .map(r => r.latitude)
     .filter(lat => typeof lat === 'number');
   const longitudes = reviews
-    .map(r => r.location_of_restaurant?.long)
+    .map(r => r.longitude)
     .filter(long => typeof long === 'number');
 
   const median_lat = median(latitudes);
@@ -66,11 +67,10 @@ const updateRestaurantStats = async (restaurant_id) => {
     avg_food_quality: parseFloat(food_quality.toFixed(2)),
     avg_cleaniness_score: parseFloat(cleaniness_score.toFixed(2)),
     avg_service_score: parseFloat(service_score.toFixed(2)),
+    avg_review_score: parseFloat(avg_review_score.toFixed(2)),
     price_range: parseFloat(price_range.toFixed(2)),
-    location: {
-      lat: median_lat,
-      long: median_long
-    },
+    latitude: median_lat,
+    longitude: median_long,
     best_dishes: Array.from(allDishes),
   };
 
