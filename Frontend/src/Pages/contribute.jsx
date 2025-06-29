@@ -8,6 +8,7 @@ import Emojis from '../Components/Emojis';
 import Form_length from '../Components/form_length';
 import Usermap_form from '../Components/Usermap_form';
 import { useState } from 'react';
+import { useAppSelector } from '../state/store';
 
 const Contribute = () => {
 
@@ -35,8 +36,6 @@ const Contribute = () => {
       longitude:values.longitude,
       open_hours: values.Open_Hours,
       images: values.Images,
-      latitude: values.latitude,
-      longitude: values.longitude,
       best_dishes: [values.Popular_Dish], // Assuming best_dishes is an array
     };
 
@@ -113,7 +112,7 @@ const Contribute = () => {
           initialValues={{
             Name: "", Location: "", City: "", latitude: '', longitude: '', Popular_Dish: "", Price_Level: "",
             Food_Quality: "", Cleanliness: "", Service: "",
-            Open_Hours: "", Iamges: "", Your_Experience: ""
+            Open_Hours: "", Images:[] , Your_Experience: ""
           }}
           validate={values => {
             const errors = {};
@@ -130,14 +129,7 @@ const Contribute = () => {
             if (!values.Popular_Dish) errors.Popular_Dish = 'Popular Dish is required';
             return errors;
           }}
-          onSubmit={(values, { setSubmitting, resetForm }) => {
-            setTimeout(() => {
-              alert("Submitted successfully!");
-              resetForm();
-              console.log('Submitted:', values);
-              setSubmitting(false);
-            }, 500);
-          }}
+          onSubmit={handleSubmit} // Changed from original to use handleSubmit
         >
           {({ isSubmitting, setFieldValue }) => (
             <Form className="w-[90vw] max-w-7xl mb-10 bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-rows-6 gap-6 text-xl p-8">
@@ -222,9 +214,9 @@ const Contribute = () => {
               {/* Images */}
               <label className='w-full m-3 p-4 cursor-pointer rounded-3xl col-span-2 text-xl shadow-xl bg-white hover:shadow-2xl transition-shadow duration-300'>
                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Images :</span>
-                <Field name="Iamges">
+                <Field name="Images">
                   {({ form }) => {
-                    const images = form.values.Iamges || [];
+                    const images = form.values.Images || [];
 
                     const handleImageUpload = async (event) => {
                       const file = event.currentTarget.files[0];
@@ -245,7 +237,7 @@ const Contribute = () => {
 
                       const cloudinaryData = await res.json();
                       const newImages = [...images, cloudinaryData.secure_url];
-                      form.setFieldValue("Iamges", newImages);
+                      form.setFieldValue("Images", newImages);
                     };
 
                     return (
@@ -273,7 +265,7 @@ const Contribute = () => {
                         {/* Optional Remove Button */}
                         <button
                           type="button"
-                          onClick={() => form.setFieldValue("Iamges", [])}
+                          onClick={() => form.setFieldValue("Images", [])}
                           className="text-sm text-red-500 hover:underline"
                         >
                           Remove all images
@@ -303,7 +295,7 @@ const Contribute = () => {
               </div>
 
 
-              {/* iepn hours */}
+              {/* open hours */}
               <label className='flex flex-col justify-center gap-2 w-full m-3 p-4 h-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300'>
                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Open Hours :</span>
                 <Field type="text" name="Open_Hours" className="w-full border-none text-[#29264A] bg-transparent text-lg px-2 focus:ring-[#8a3ab9] placeholder-gray-400 focus:outline-none" placeholder="Enter Open Hours" />
