@@ -1,17 +1,18 @@
-const express = require('express');
+import express from 'express';
+import db from '../firebase/firebase.js';
+import { generateRestaurantId } from '../utils/idGenerators.js';
+
 const router = express.Router();
-const db = require('../firebase/firebase');
-const { generateRestaurantId } = require('../utils/idGenerators');
 
 // Add new restaurant (optional)
 router.post('/', async (req, res) => {
-  const { name, city, ...otherFields } = req.body;
+  const { name, locality, ...otherFields } = req.body;
 
-  if (!name || !city) {
-    return res.status(400).json({ error: 'name and city are required' });
+  if (!name || !locality) {
+    return res.status(400).json({ error: 'name and locality are required' });
   }
 
-  const restaurant_id = generateRestaurantId(name, city);
+  const restaurant_id = generateRestaurantId(name, locality);
   const docRef = db.collection('restaurants').doc(restaurant_id);
 
   const docSnap = await docRef.get();
@@ -22,7 +23,7 @@ router.post('/', async (req, res) => {
   await docRef.set({
     restaurant_id,
     name,
-    city,
+    locality,
     ...otherFields
   });
 
@@ -32,15 +33,17 @@ router.post('/', async (req, res) => {
 // Get all restaurants
 router.get('/', async (req, res) => {
   let query = db.collection('restaurants');
-  const { city, min_cleaniness, price_range } = req.query;
+  const { locality, min_cleaniness, price_range } = req.query;
 
-  if (city) query = query.where('city', '==', city);
+  if (locality) query = query.where('locality', '==', locality);
   if (min_cleaniness) query = query.where('avg_cleaniness_score', '>=', Number(min_cleaniness));
   if (price_range) query = query.where('price_range', '==', Number(price_range));
 
   const snapshot = await query.get();
   const data = snapshot.docs.map(doc => doc.data());
-
+  if (data.length === 0) {
+    return res.status(404).json({ error: 'No restaurants found' });
+  }
   res.json(data);
 });
 
@@ -51,4 +54,4 @@ router.get('/:id', async (req, res) => {
   res.json(doc.data());
 });
 
-module.exports = router;
+export default router;

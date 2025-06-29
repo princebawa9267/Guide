@@ -1,10 +1,10 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
 
-const userRoutes = require('./routes/users');
-const restaurantRoutes = require('./routes/restaurants');
-const reviewRoutes = require('./routes/reviews');
+import userRoutes from './routes/users.js';
+import restaurantRoutes from './routes/restaurants.js';
+import reviewRoutes from './routes/reviews.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;

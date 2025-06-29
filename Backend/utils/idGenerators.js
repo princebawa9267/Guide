@@ -1,15 +1,20 @@
-const crypto = require('crypto');
-const { v4: uuidv4 } = require('uuid');
+import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
 
-function generateRestaurantId(name, city) {
+export function generateRestaurantId(name, city) {
   return crypto.createHash('sha256')
     .update(`${name.trim().toLowerCase()}__${city.trim().toLowerCase()}`)
     .digest('hex')
-    .substring(0, 12); // shorten for readability
+    .substring(0, 12);
 }
 
-function generateReviewId() {
+export function generateReviewId() {
   return uuidv4();
 }
 
-module.exports = { generateRestaurantId, generateReviewId };
+export function generateUserId(email) {
+  return crypto.createHash('sha256')
+    .update(email.trim().toLowerCase())
+    .digest('hex')
+    .substring(0, 12);
+}
