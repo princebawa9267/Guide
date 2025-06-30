@@ -4,7 +4,7 @@ import Navbar from '../../Components/Navbar';
 import Typewriter from '../../Components/typewriter';
 import Locations from './Locations';
 import Footer from '../../Components/Footer';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';//hook use to read and modify URL query parameters in the browser.
 
 const LocationSearchPage = () => {
   const [searchParams] = useSearchParams();

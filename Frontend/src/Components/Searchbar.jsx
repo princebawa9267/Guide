@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; //navigate use to navigate to the another page
 import { CiSearch } from "react-icons/ci";
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../src/register.js';
+import { collection, getDocs } from 'firebase/firestore';//importing firebase methods to read data of db
+import { db } from '../../src/register.js';//importing database from the regiter page where the firebase is registered
 
 const Searchbar = () => {
   const [locality, setLocality] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-  const [allLocalities, setAllLocalities] = useState([]);
-  const navigate = useNavigate();
+  const [suggestions, setSuggestions] = useState([]);//Stores suggested localities matching user input for autocomplete.
+  const [allLocalities, setAllLocalities] = useState([]);//Stores all unique localities fetched from Firebase to filter for suggestions.
+  const navigate = useNavigate();//Initializes navigation function to redirect the user to the search results page.
 
   useEffect(() => {
-    const fetchLocalities = async () => {
+    const fetchLocalities = async () => {  //function use to fetch data from database
       const snapshot = await getDocs(collection(db, 'restaurants'));
-      const unique = new Set();
+      const unique = new Set();//Creates a Set to store unique localities (removes duplicates).
       snapshot.forEach(doc => {
         const data = doc.data();
         if (data.locality) {
-          unique.add(data.locality.toLowerCase());
+          unique.add(data.locality.toLowerCase());//Extracts locality and stores it in lowercase inside the Set.
         }
       });
-      setAllLocalities([...unique]);
+      setAllLocalities([...unique]);//Converts the Set into an array and saves it in state.
     };
 
     fetchLocalities();
@@ -31,8 +31,10 @@ const Searchbar = () => {
     setLocality(value);
 
     if (value.length === 0) {
-      setSuggestions([]);
+      setSuggestions([]);//If input is empty, clear suggestions.
     } else {
+      //Filters matching localities from allLocalities using lowercase match.
+      //Shows only the top 5 suggestions.
       const filtered = allLocalities.filter(loc =>
         loc.startsWith(value.toLowerCase())
       );
@@ -43,12 +45,17 @@ const Searchbar = () => {
   const handleSuggestionClick = (suggestion) => {
     setLocality(suggestion);
     setSuggestions([]);
+    //When a suggestion is clicked, it fills the input box with that value and hides the list.
   };
 
   const handleSearch = (e) => {
+  // Without e.preventDefault(), when you submit the form (by pressing Enter or clicking the submit button), the browser would:
+  // Refresh the page
+  // Lose React state
+  // Possibly break the SPA (Single Page Application) flow
     e.preventDefault();
-    if (locality.trim()) {
-      navigate(`/searched-location?locality=${encodeURIComponent(locality)}`);
+    if (locality.trim()) { // we use trim bcz A user doesn't accidentally search with only spaces (e.g., " ")
+      navigate(`/searched-location?locality=${encodeURIComponent(locality)}`);//going to the next page with the selected locality as a URL query parameter.
     }
   };
 
