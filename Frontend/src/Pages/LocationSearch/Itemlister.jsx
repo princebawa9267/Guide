@@ -1,8 +1,17 @@
 import React from 'react'
 import thinkingImg from '/src/assets/Thinking face-rafiki.png';
 import ItemCard from './ItemCard'
+import { useNavigate } from 'react-router-dom';
 
 const ItemLister = ({items, heading,onNullMessage}) => {
+
+  const navigate=useNavigate();
+  const handleclick=()=>{
+    navigate('/selected-item');
+  }
+
+
+
   return (
     <div>
       <div className="w-[90vw] max-w-6xl h-auto rounded-3xl nunito mx-auto mt-10 mb-10 bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] shadow-2xl cursor-pointer p-6">
@@ -22,9 +31,9 @@ const ItemLister = ({items, heading,onNullMessage}) => {
         <div className="w-full max-h-[55vh] overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-2">
           {items.map((data, index) => (
             <div
-            
+              onClick={handleclick}
               key={index}
-              className="border-l-4 border-[#8a3ab9] bg-white p-5 rounded-2xl shadow-md text-[#29264A] hover:scale-[1.02] transition-transform duration-300"
+              className="border-l-4 border-[#8a3ab9] bg-whitec cursor-pointer p-5 rounded-2xl shadow-md text-[#29264A] hover:scale-[1.02] transition-transform duration-300"
             >
               <ItemCard data={data}/>
             </div>
