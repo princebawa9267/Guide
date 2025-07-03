@@ -5,11 +5,13 @@ import Footer from '../Components/Footer';
 import React, { useState } from 'react';
 import img from "/src/assets/Tour guide-rafiki.png"
 import think from "/src/assets/Thinking face-rafiki.png"
+import thinkingImg from '/src/assets/Thinking face-rafiki.png';
 
 const Selected_item = () => {
 
   const [open_hours, setopen_hours] = useState('')
   const [images, setimages] = useState([img, think, 4, 8, 9, 0, 9])
+  const [reviews, setreviews] = useState([])
 
   return (
     <div>
@@ -210,6 +212,37 @@ const Selected_item = () => {
               ))}
             </div>) : (<div className="flex justify-center h-[45vh] items-center border-y text-xl  border-gray-300 p-3">No images available</div>)}
           </div>
+
+        </div>
+
+
+
+        {/* reviews */}
+        <div className="w-[90vw]  appear-apply h-[60vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8]  rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10  overflow-hidden relative p-6">
+
+          <div className="h-1 w-full bg-[#8a3ab9] rounded-full mt-5 mb-4"></div>
+          <span className="text-[#29264A] bg-white mx-2 text-2xl md:text-3xl font-bold absolute top-6 left-18 text-center mb-2">
+            Reviews
+          </span>
+
+            {reviews.length === 0 ? (
+                  <div className="w-full h-[50vh] flex flex-col justify-center items-center text-[#8a3ab9]">
+                    <img src={thinkingImg} alt="No reviews yet" className="h-[40%] opacity-80 mb-4" />
+                    <p className="text-lg font-semibold">No Reviews Yet — Be the First Explorer to Share!</p>
+                  </div>
+                ) : (
+                  <div className="w-full max-h-[55vh] overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-6 p-2">
+                    {reviews.map((review ) => (
+                      <div
+                        key={review.review_id}
+                        className="border-l-4 border-[#8a3ab9] bg-white p-5 rounded-2xl shadow-md text-[#29264A] hover:scale-[1.02] transition-transform duration-300"
+                      >
+                        <p className="text-base md:text-lg">{review.review_text}</p>
+                        <div className='flex items-center text-lg bg-[#e5dcf8] w-1/9 justify-evenly rounded-lg'><AiFillLike /><span>{review.upvotes}</span></div>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
         </div>
 

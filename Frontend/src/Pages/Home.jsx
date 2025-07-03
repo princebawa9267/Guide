@@ -8,6 +8,7 @@ import Footer from '../Components/Footer';
 import toursitImg from '/src/assets/Tour guide-rafiki.png';
 
 const Home = () => {
+
   return (
     <>
       <div className="">
