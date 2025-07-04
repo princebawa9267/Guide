@@ -18,7 +18,7 @@ const Userreview = () => {
     
     try{
     const response=await axios.get(`http://localhost:3000/reviews/${user_id}/reviews`)
-    console.log("data is :"+response.data);
+    console.log(auth);
     setReviews(response.data);
     setloading(false);
     }catch(err){
@@ -55,8 +55,9 @@ const Userreview = () => {
               key={review.review_id}
               className="border-l-4 border-[#8a3ab9] bg-white p-5 rounded-2xl shadow-md text-[#29264A] hover:scale-[1.02] transition-transform duration-300"
             >
-              <p className="text-base md:text-lg">{review.review_text}</p>
-              <div className='flex items-center text-lg bg-[#e5dcf8] w-1/9 justify-evenly rounded-lg'><AiFillLike /><span>{review.upvotes}</span></div>
+              <p className="text-base md:text-lg">You reviewed : {review.restaurant_name}</p>
+              <p className="text-base md:text-lg">What you said : {review.review_text}</p>
+              <p className="text-base md:text-lg flex gap-2">Upvotes : <div className='flex items-center text-lg bg-[#e5dcf8] w-1/9 justify-evenly rounded-lg'><AiFillLike /><span>{review.upvotes}</span></div></p>
             </div>
           ))}
         </div>
