@@ -15,11 +15,11 @@ const ItemLister = ({items, heading,onNullMessage}) => {
   return (
     <div>
       <div className="w-[90vw] max-w-6xl h-auto rounded-3xl appear-apply nunito mx-auto mt-10 mb-10 bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] shadow-2xl cursor-pointer p-6">
-      {/* Heading */}
-      <div className="text-[#29264A] text-2xl md:text-3xl font-bold text-center mb-2">
-        {heading}
-      </div>
-      <div className="h-1 w-full bg-[#8a3ab9] rounded-full mb-4"></div>
+        {/* Heading */}
+        <div className="text-[#29264A] text-2xl md:text-3xl font-bold text-center mb-2">
+          {heading}
+        </div>
+        <div className="h-1 w-full bg-[#8a3ab9] rounded-full mb-4"></div>
 
       {/* Conditional rendering for reviews */}
       {items.length === 0 ? (
