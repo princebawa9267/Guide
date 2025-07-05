@@ -3,7 +3,7 @@ import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
 import Typewriter from '../Components/typewriter';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import publishImg from '/src/assets/undraw_publish-post_7g2z-removebg-preview.png';
+import social_media from '/src/assets/social-media.png';
 import Emojis from '../Components/Emojis';
 import Form_length from '../Components/form_length';
 import Usermap_form from '../Components/Usermap_form';
@@ -103,7 +103,7 @@ const Contribute = () => {
             <div className="h-1 w-full bg-[#8a3ab9] rounded-full"></div>
           </div>
           <div className="w-full md:w-1/2 h-full flex justify-center md:justify-end">
-            <img className="h-[90%] object-contain transform hover:scale-105 transition duration-500" src={publishImg} alt="Traveler" />
+            <img className="h-[90%] object-contain transform hover:scale-105 transition duration-500" src={social_media} alt="Traveler" />
           </div>
         </div>
 

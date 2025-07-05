@@ -57,7 +57,7 @@ const Userreview = () => {
             >
               <p className="text-base md:text-lg">You reviewed : {review.restaurant_name}</p>
               <p className="text-base md:text-lg">What you said : {review.review_text}</p>
-              <p className="text-base md:text-lg flex gap-2">Upvotes : <div className='flex items-center text-lg bg-[#e5dcf8] w-1/9 justify-evenly rounded-lg'><AiFillLike /><span>{review.upvotes}</span></div></p>
+              <div className="text-base md:text-lg flex gap-2">Upvotes : <div className='flex items-center text-lg bg-[#e5dcf8] w-1/9 justify-evenly rounded-lg'><AiFillLike /><span>{review.upvotes}</span></div></div>
             </div>
           ))}
         </div>

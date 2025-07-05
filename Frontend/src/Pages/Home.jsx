@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import Navbar from '../Components/Navbar';
 import Searchbar from '../Components/Searchbar';
 import Typewriter from '../Components/typewriter';
@@ -6,8 +6,36 @@ import Userreview from '../Components/userreview';
 import Usermaps from '../Components/usermaps';
 import Footer from '../Components/Footer';
 import toursitImg from '/src/assets/Tour guide-rafiki.png';
+import Searching_img from '/src/assets/searching.png';
+import van_img from '/src/assets/van.png';
+import couple_img from '/src/assets/couple.png';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+
+  const map_ref = useRef(null);
+  const search_ref = useRef(null);
+  const navigate = useNavigate();
+
+  //function for scroll to the map
+  const scrolltomap = () => {
+
+    map_ref.current?.scrollIntoView({ behavior: 'smooth' });
+
+  };
+
+
+  //function for scroll to the searchbar
+  const srcolltosearch = () => {
+    search_ref.current?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  //funvation for navigate to the contribute page
+  const contribute_navigate = () => {
+    navigate("/contribute");
+  }
+
+
 
   return (
     <>
@@ -33,7 +61,7 @@ const Home = () => {
 
           {/* Animated line/message */}
           <div className="p-4 text-center relative mx-auto">
-            <Typewriter line="Let your journey guide others — explore cities, share knowledge, and leave a trail of wisdom."/>
+            <Typewriter line="Let your journey guide others — explore cities, share knowledge, and leave a trail of wisdom." />
           </div>
 
         </div>
@@ -44,26 +72,45 @@ const Home = () => {
       <div className='main flex flex-col items-center justify-center gap-15  mt-5'>
 
         {/* Content BELOW the SVG section */}
-        <div className=" p-4">
+        <div className=" p-4" ref={search_ref}>
           <Searchbar />
         </div>
 
         {/* features */}
-        <div className="p-6 flex appear-apply justify-center shadow-2xl text-white bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center w-full">
-            {Array.from({ length: 6 }).map((_, idx) => (
-              <div
-                key={idx}
-                className={`w-[80%] sm:w-[45vw] lg:w-[25vw] h-[22vh] bg-gradient-to-br ${idx % 2 === 0
-                    ? 'from-[#8a3ab9] to-[#b46ae4]'
-                    : 'from-[#f2435a] to-[#ff7b92]'
-                  } p-6 rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:ring-4 hover:ring-white flex items-center justify-center text-xl font-semibold text-center`}
-              >
-                Card {idx + 1}
-              </div>
-            ))}
+        <div className="p-6 flex justify-center shadow-2xl bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full justify-items-center">
+
+            {/* Feature 1: Search & Guided Help */}
+            <div className="w-[90%] sm:w-[40vw] lg:w-[25vw] h-[65vh] p-6 rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:ring-4 hover:ring-white flex flex-col justify-between items-center text-white text-center bg-gradient-to-br from-[#8a3ab9] to-[#b46ae4]" onClick={srcolltosearch}>
+              <img className="h-[60%] object-contain transition duration-500" src={Searching_img} alt="Search" />
+              <div className="mt-4 text-lg font-semibold">Smart Place Search</div>
+              <p className="text-sm opacity-90 px-2">
+                Search any place, and we become your tour guide by showing local details, suggestions, and more.
+              </p>
+            </div>
+
+            {/* Feature 2: Live Location Tracking */}
+            <div className="w-[90%] sm:w-[40vw] lg:w-[25vw] h-[65vh] p-6 rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:ring-4 hover:ring-white flex flex-col justify-between items-center text-white text-center bg-gradient-to-br from-[#f2435a] to-[#ff7b92]" onClick={scrolltomap}>
+              <img className="h-[60%] object-contain transition duration-500" src={van_img} alt="Live Location" />
+              <div className="mt-4 text-lg font-semibold">Location on Map</div>
+              <p className="text-sm opacity-90 px-2">
+                We track your location and show it on the map in real-time so you always know where you’re heading.
+              </p>
+            </div>
+
+            {/* Feature 3: Share Your Experience */}
+            <div className="w-[90%] sm:w-[40vw] lg:w-[25vw] h-[65vh] p-6 rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:ring-4 hover:ring-white flex flex-col justify-between items-center text-white text-center bg-gradient-to-br from-[#8a3ab9] to-[#b46ae4]" onClick={contribute_navigate}>
+              <img className="h-[60%] object-contain transition duration-500" src={couple_img} alt="Contribute" />
+              <div className="mt-4 text-lg font-semibold">Contribute Your Story</div>
+              <p className="text-sm opacity-90 px-2">
+                Add your travel experience using a simple form — help others, and they’ll help you in return.
+              </p>
+            </div>
+
           </div>
         </div>
+
+
 
 
 
@@ -93,10 +140,10 @@ const Home = () => {
 
         {/* user location map */}
         <div className='w-full appear-apply'>
-          <div><Usermaps /></div>
+          <div ref={map_ref}><Usermaps /></div>
         </div>
 
-        <Footer  />
+        <Footer />
 
       </div>
 
