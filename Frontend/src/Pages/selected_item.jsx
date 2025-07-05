@@ -43,7 +43,7 @@ const Selected_item = () => {
     } else if (score < 5) {
       return "😁";
     } else {
-      return "🙂"; //in case score is out of range
+      return "N/A"; //in case score is out of range
     }
   };
 
@@ -118,7 +118,7 @@ const Selected_item = () => {
               </span>
               <span className="text-center text-gray-500">:</span>
               <span className="text-left font-medium">
-                {restaurantData?.price_range || "N/A"}
+                {getEmoji(restaurantData?.price_range || "N/A")}
               </span>
             </div>
           </div>

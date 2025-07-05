@@ -21,28 +21,38 @@ const Contribute = () => {
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     console.log('Submitting:', values);
 
+
+    const lowerCasedValues = {
+      ...values,
+      Name: values.Name.toLowerCase(),
+      Location: values.Location.toLowerCase(),
+      City: values.City.toLowerCase(),
+      Popular_Dish: values.Popular_Dish.toLowerCase(),
+      Your_Experience: values.Your_Experience.toLowerCase(),
+      Open_Hours: values.Open_Hours.toLowerCase()
+    };
+
   // Prepare the payload for the API call
-    const payload = {
-      name: values.Name,
-      locality: values.Location,
-      user_id: auth.user.uid, // Replace this with actual user ID logic from your app
-      review_text: values.Your_Experience,
-      price_range: values.Price_Level,
-      food_quality: values.Food_Quality,
-      cleanliness_score: values.Cleanliness,
-      service_score: values.Service,
-      location_of_restaurant: values.City,
-      latitude:values.latitude,
-      longitude:values.longitude,
-      open_hours: values.Open_Hours,
+     const payload = {
+      name: lowerCasedValues.Name,
+      locality: lowerCasedValues.Location,
+      user_id: auth.user.uid,
+      review_text: lowerCasedValues.Your_Experience,
+      price_range: lowerCasedValues.Price_Level,
+      food_quality: lowerCasedValues.Food_Quality,
+      cleanliness_score: lowerCasedValues.Cleanliness,
+      service_score: lowerCasedValues.Service,
+      location_of_restaurant: lowerCasedValues.City,
+      latitude: values.latitude,
+      longitude: values.longitude,
+      open_hours: lowerCasedValues.Open_Hours,
       images: values.Images,
-      best_dishes: [values.Popular_Dish], // Assuming best_dishes is an array
+      best_dishes: [lowerCasedValues.Popular_Dish],
     };
 
     try {
       // Make API call to backend
-      console.log('Payload:', payload);
-      const response = await fetch('http://localhost:3000/reviews', {
+    const response = await fetch('http://localhost:3000/reviews', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +65,7 @@ const Contribute = () => {
       if (response.ok) {
         alert("Submitted successfully!");
         console.log('API Response:', result);
-        resetForm(); // Reset the form if successful
+        resetForm();
       } else {
         alert(`Failed to submit. ${result.error || 'Something went wrong'}`);
       }
@@ -67,6 +77,7 @@ const Contribute = () => {
       setSubmitting(false);
     }
   };
+  
 
 
   return (
