@@ -4,6 +4,7 @@ import { generateReviewId, generateRestaurantId } from '../utils/idGenerators.js
 import updateRestaurantStats from '../utils/updateRestaurantStats.js';
 
 const router = express.Router();
+app.use(express.json());
 
 // Add review
 router.post('/', async (req, res) => {

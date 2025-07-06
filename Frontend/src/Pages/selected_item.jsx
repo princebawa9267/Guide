@@ -7,13 +7,18 @@ import { useLocation } from "react-router-dom";
 import img from "/src/assets/Tour guide-rafiki.png";
 import think from "/src/assets/Thinking face-rafiki.png";
 import thinkingImg from "/src/assets/Thinking face-rafiki.png";
+import { useAppSelector } from '../state/store';
+import axios from "axios";
+import { toast } from 'react-toastify';
 
 const Selected_item = () => {
   const location = useLocation();
   const restaurantData = location.state;
+  // Getting user id
+  const { auth } = useAppSelector(store => store);
 
   const [open_hours, setopen_hours] = useState("");
-  const [images, setimages] = useState([img, think]);
+  const [images, setimages] = useState([]);
   const [reviews, setreviews] = useState([]);
 
   useEffect(() => {
@@ -22,8 +27,14 @@ const Selected_item = () => {
         `http://localhost:3000/reviews/restaurant/${restaurantData.restaurant_id}`
       )
         .then((res) => res.json())
-        .then((data) => setreviews(data))
+        .then((data) => {
+          setreviews(data)
+          //fetching iimgs urls from review
+          const imageearr = data.flatMap(review => review.images || []);
+          setimages(imageearr);
+        })
         .catch((err) => console.error("Error fetching reviews:", err));
+
     }
   }, [restaurantData]);
   console.log(restaurantData.restaurant_id);
@@ -46,6 +57,38 @@ const Selected_item = () => {
       return "N/A"; //in case score is out of range
     }
   };
+
+  const handleupvote = async (review_id, user_id) => {
+
+    const loadingToastId = toast.loading("Updating vote...");
+
+    try {
+      const res = await axios.post(`http://localhost:3000/reviews/${review_id}/upvote`, {
+        user_id: user_id,
+      });
+
+      // Re-fetch updated reviews from the backend
+      const response = await fetch(`http://localhost:3000/reviews/restaurant/${restaurantData.restaurant_id}`);
+      const updatedReviews = await response.json();
+      setreviews(updatedReviews);
+
+      toast.update(loadingToastId, {
+        render: "Upvoted successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    } catch (err) {
+      const msg = err?.response?.data?.error || "Something went wrong";
+      toast.update(loadingToastId, {
+        render: err?.response?.data?.error || "Something went wrong",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
+
+  }
 
   return (
     <div>
@@ -124,19 +167,35 @@ const Selected_item = () => {
           </div>
         </div>
 
-        {/* Map */}
-        <div className="w-[90vw] appear-apply h-[60vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] px-6 rounded-3xl shadow-2xl nunito mx-auto mt-7 mb-2 overflow-hidden relative pt-6">
-          <div className="h-1 w-full bg-[#8a3ab9] rounded-full mt-5 mb-4 "></div>
+
+
+        {/* Gallery */}
+        <div className="w-[90vw] appear-apply h-[60vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10 overflow-hidden relative p-6">
+          <div className="h-1 w-full bg-[#8a3ab9] rounded-full mt-5 mb-4"></div>
           <span className="text-[#29264A] bg-white mx-2 text-2xl md:text-3xl font-bold absolute top-6 left-18 text-center mb-2">
-            Map
+            Gallery
           </span>
-          <div className="w-full h-full text-lg text-gray-800 pt-3">
-            <Selected_item_map
-              latitude={restaurantData?.latitude}
-              longitude={restaurantData?.longitude}
-            />
+          <div className="w-full bg-transparent text-lg text-gray-800 px-6 py-4">
+            {images?.length ? (
+              <div className="grid grid-cols-5 gap-7 h-[45vh] border-y items-center justify-items-center border-gray-300 p-3 overflow-x-scroll">
+                {images.map((img, index) => (
+                  <img
+                    key={index}
+                    src={img}
+                    alt={`preview-${index}`}
+                    className="rounded-xl  cursor-pointer w-65 h-65 object-cover transition-transform duration-300 ease-in-out hover:scale-109"
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex justify-center h-[45vh] items-center border-y text-xl border-gray-300 p-3">
+                No images available
+              </div>
+            )}
           </div>
         </div>
+
+       
 
         <div className="w-[90vw]  appear-apply h-[30vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8]  rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10  overflow-hidden relative p-6">
 
@@ -150,35 +209,35 @@ const Selected_item = () => {
           <div className="w-full bg-transparent text-lg text-gray-800 px-6 py-4">
 
             <div className="grid grid-cols-5 gap-y-7 text-2xl border-y items-center justify-items-center h-[16vh]  border-gray-300 p-3">
-             <div className="flex gap-5">
-              <span>😡</span>
-              <span>:</span>
-              <span>Worst</span>
-             </div>
+              <div className="flex gap-5">
+                <span>😡</span>
+                <span>:</span>
+                <span>Worst</span>
+              </div>
 
-             <div className="flex gap-5"> 
-              <span>😕</span>
-              <span>:</span>
-              <span>Okay</span>
-             </div>
+              <div className="flex gap-5">
+                <span>😕</span>
+                <span>:</span>
+                <span>Okay</span>
+              </div>
 
-             <div className="flex gap-5">
-              <span>😐</span>
-              <span>:</span>
-              <span>Average</span>
-             </div>
+              <div className="flex gap-5">
+                <span>😐</span>
+                <span>:</span>
+                <span>Average</span>
+              </div>
 
-             <div className="flex gap-5">
-              <span>🙂</span>
-              <span>:</span>
-              <span>Very Good</span>
-             </div>
+              <div className="flex gap-5">
+                <span>🙂</span>
+                <span>:</span>
+                <span>Very Good</span>
+              </div>
 
-             <div className="flex gap-5">
-              <span>😁</span>
-              <span>:</span>
-              <span>Excellent</span>
-             </div>
+              <div className="flex gap-5">
+                <span>😁</span>
+                <span>:</span>
+                <span>Excellent</span>
+              </div>
 
             </div>
 
@@ -236,31 +295,7 @@ const Selected_item = () => {
           </div>
         </div>
 
-        {/* Gallery */}
-        <div className="w-[90vw] appear-apply h-[60vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10 overflow-hidden relative p-6">
-          <div className="h-1 w-full bg-[#8a3ab9] rounded-full mt-5 mb-4"></div>
-          <span className="text-[#29264A] bg-white mx-2 text-2xl md:text-3xl font-bold absolute top-6 left-18 text-center mb-2">
-            Gallery
-          </span>
-          <div className="w-full bg-transparent text-lg text-gray-800 px-6 py-4">
-            {images?.length ? (
-              <div className="grid grid-cols-5 gap-y-7 h-[45vh] border-y items-center justify-items-center border-gray-300 p-3">
-                {images.slice(0, 5).map((img, index) => (
-                  <img
-                    key={index}
-                    src={img}
-                    alt={`preview-${index}`}
-                    className="rounded-xl cursor-pointer w-65 h-65 object-cover transition-transform duration-300 ease-in-out hover:scale-105"
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="flex justify-center h-[45vh] items-center border-y text-xl border-gray-300 p-3">
-                No images available
-              </div>
-            )}
-          </div>
-        </div>
+        
 
         {/* Reviews */}
         <div className="w-[90vw] appear-apply h-[60vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10 overflow-hidden relative p-6">
@@ -287,10 +322,42 @@ const Selected_item = () => {
                   className="border-l-4 border-[#8a3ab9] bg-white p-5 rounded-2xl shadow-md text-[#29264A] hover:scale-[1.02] transition-transform duration-300"
                 >
                   <p className="text-base md:text-lg">{review.review_text}</p>
+                  <div className="flex items-center justify-between"><div className="text-lg">Upvotes: {review.upvotes || 0}</div>
+                    <div> {review.upvoted_by?.includes(auth.user.uid) ? (
+                      <button
+                        disabled
+                        className="mt-2 px-4 py-1 text-lg cursor-not-allowed bg-gray-400 text-white rounded"
+                      >
+                        👍 Already Upvoted
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleupvote(review.review_id, auth.user.uid)}
+                        className="mt-2 px-4 py-1 text-lg cursor-pointer bg-[#8a3ab9] text-white rounded hover:bg-[#b87adb]"
+                      >
+                        👍 Upvote
+                      </button>
+                    )}</div>
+                  </div>
                 </div>
               ))}
             </div>
           )}
+        </div>
+
+
+         {/* Map */}
+        <div className="w-[90vw] appear-apply h-[60vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] px-6 rounded-3xl shadow-2xl nunito mx-auto mt-7 mb-2 overflow-hidden relative pt-6">
+          <div className="h-1 w-full bg-[#8a3ab9] rounded-full mt-5 mb-4 "></div>
+          <span className="text-[#29264A] bg-white mx-2 text-2xl md:text-3xl font-bold absolute top-6 left-18 text-center mb-2">
+            Map
+          </span>
+          <div className="w-full h-full text-lg text-gray-800 pt-3">
+            <Selected_item_map
+              latitude={restaurantData?.latitude}
+              longitude={restaurantData?.longitude}
+            />
+          </div>
         </div>
 
         <Footer />
