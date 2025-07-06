@@ -33,7 +33,7 @@ const ItemLister = ({items, heading,onNullMessage}) => {
             <div
               onClick={handleclick}
               key={index}
-              className="border-l-4 border-[#8a3ab9] bg-whitec cursor-pointer p-5 rounded-2xl shadow-md text-[#29264A] hover:scale-[1.02] transition-transform duration-300"
+              className="border-l-4 border-[#8a3ab9] bg-white cursor-pointer p-5 rounded-2xl shadow-md text-[#29264A] hover:scale-[1.02] transition-transform duration-300"
             >
               <ItemCard data={data}/>
             </div>
