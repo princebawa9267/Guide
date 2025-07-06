@@ -40,7 +40,7 @@ const Selected_item = () => {
       return "😐";
     } else if (score < 4) {
       return "🙂";
-    } else if (score < 5) {
+    } else if (score <= 5) {
       return "😁";
     } else {
       return "N/A"; //in case score is out of range
@@ -230,7 +230,7 @@ const Selected_item = () => {
               </span>
               <span className="text-center text-gray-500">:</span>
               <span className="text-left font-medium">
-                {open_hours || "Not Available"}
+                {restaurantData?.open_hours || "Not Available"}
               </span>
             </div>
           </div>
