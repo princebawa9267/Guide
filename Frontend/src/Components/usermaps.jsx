@@ -30,7 +30,7 @@ const Usermaps = () => {
         (err) => {
           console.error('Error watching location:', err);
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 10000 }
       );
     } else {
       console.log('Geolocation is not supported.');
