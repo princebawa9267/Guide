@@ -10,6 +10,7 @@ router.post('/', async (req, res) => {
   const {
     name,
     locality,
+    city,
     user_id,
     review_text,
     price_range,
@@ -23,11 +24,11 @@ router.post('/', async (req, res) => {
     best_dishes = []
   } = req.body;
 
-  if (!name || !locality || !user_id) {
-    return res.status(400).json({ error: 'name, locality, and user_id are required' });
+  if (!name || !locality || !city || !user_id) {
+    return res.status(400).json({ error: 'name, locality, city and user_id are required' });
   }
 
-  const restaurant_id = generateRestaurantId(name, locality);
+  const restaurant_id = generateRestaurantId(name, locality, city);
 
   // Check if restaurant exists
   const restaurantDoc = await db.collection('restaurants').doc(restaurant_id).get();
@@ -37,6 +38,7 @@ router.post('/', async (req, res) => {
       restaurant_id,
       name,
       locality,
+      city,
       avg_cleanliness_score: cleanliness_score,
       avg_food_quality: food_quality,
       avg_service_score: service_score,

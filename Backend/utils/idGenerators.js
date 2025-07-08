@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 
-export function generateRestaurantId(name, city) {
+export function generateRestaurantId(name, location, city) {
   return crypto.createHash('sha256')
-    .update(`${name.trim().toLowerCase()}__${city.trim().toLowerCase()}`)
+    .update(`${name.trim().toLowerCase()}__${location.trim().toLowerCase()}__${city.trim().toLowerCase()}`)
     .digest('hex')
     .substring(0, 12);
 }
