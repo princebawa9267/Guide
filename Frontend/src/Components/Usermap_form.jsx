@@ -1,4 +1,4 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -22,26 +22,29 @@ const Usermap_form = ({ onLocationSelect, setFieldValue }) => {
     const [markerPosition, setMarkerPosition] = useState(null);//store selected location
 
     useEffect(() => {
-        if ('geolocation' in navigator) { //use to fetch user location
-            navigator.geolocation.getCurrentPosition(
+        let watchId;
+
+        if ('geolocation' in navigator) {
+            watchId = navigator.geolocation.watchPosition(
                 (pos) => {
                     const userLat = pos.coords.latitude;
                     const userLng = pos.coords.longitude;
                     setPosition([userLat, userLng]);
-                    console.log('Latitude:', userLat);
-                    console.log('Longitude:', userLng);
-                    
                 },
                 (err) => {
-                    console.error('Error fetching location:', err),
-                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                    
-                }
-                
+                    console.error('Error watching location:', err);
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         } else {
             console.log('Geolocation is not supported.');
         }
+
+        return () => {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+            }
+        };
     }, []);
 
     const MapClickHandler = () => { //use to set selected location
@@ -60,7 +63,7 @@ const Usermap_form = ({ onLocationSelect, setFieldValue }) => {
     return (
         <>
             {position ? (
-                <MapContainer  center={position} zoom={13} className=" w-full h-full rounded-b-3xl">
+                <MapContainer center={position} zoom={13} className=" w-full h-full rounded-b-3xl">
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     <MapClickHandler />
 

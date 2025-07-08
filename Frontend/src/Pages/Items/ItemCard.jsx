@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from 'react'
-// import "./CSS/ProductCard.css"
-import { Favorite, ModeComment } from '@mui/icons-material';
-import { Button } from '@mui/material';
-import { useNavigate } from 'react-router';
-import { useAppDispatch } from '../../state/store';
-// import { addProductToWishlist } from '../../../state/customer/wishlistSlice';
+import {  Rating} from '@mui/material'
+import { Star } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
-const ItemCard = ({ item }) => {
 
-    const [currentImage, setCurrentImage] = useState(0);
+
+const ItemCard = ({place}) => {
+
     const [isHovered, setIsHovered] = useState(false);
+    const [currentImage, setCurrentImage] = useState(0);
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
+
+    const foodImage = [
+        "https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg",
+        "https://tse1.mm.bing.net/th/id/OIP.nHdjesbJ7Yc8yl2bJQuY7wHaEo?pid=ImgDet&w=474&h=296&rs=1&o=7&rm=3",
+        "https://tse2.mm.bing.net/th/id/OIP.ak3XveK3X42VVIh9fOixwgHaFB?rs=1&pid=ImgDetMain&o=7&rm=3"];
 
     useEffect(() => {
-
         let interval
         if (isHovered) {
             interval = setInterval(() => {
-                setCurrentImage((prevImage) => (prevImage + 1) % item.images.length)
+                setCurrentImage((prevImage) => (prevImage + 1) % foodImage.length)
             }, 1000);
         }
         return () => {
@@ -28,45 +30,47 @@ const ItemCard = ({ item }) => {
         };
     }, [isHovered])
 
-    const handleWishlist = (event) => {
-        event.stopPropagation()
-        item.id && dispatch(addProductToWishlist({ productId: item.id }))
-    }
+    const labels = {
+    0.5: 'Useless',
+    1: 'Useless+',
+    1.5: 'Poor',
+    2: 'Poor+',
+    2.5: 'Ok',
+    3: 'Ok+',
+    3.5: 'Good',
+    4: 'Good+',
+    4.5: 'Excellent',
+    5: 'Excellent+',
+  };
+
+  const value = place?.avg_food_quality;
+
+  const handleClick = (data) => {
+    // Navigate to the selected item page with the place data
+    navigate(`/selected-item/${data.restaurant_id}`, { state: data });
+    };
 
     return (
-        <>
-            <div onClick={() => navigate(`/product-details/${item.category?.categoryId}/${item.title}/${item.id}`)} className='group pt-5 pl-5 relative overflow-hidden'>
-                <div className='card' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+        <div>
+            <div className='flex shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer bg-white rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => handleClick(place)}>
+                <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
                     {
-                        [1].map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='card-media object-top' src="https://imgv3.fotor.com/images/videoImage/wonderland-girl-generated-by-Fotor-ai-art-generator.jpg" alt="" />)
-                    }
-                    {isHovered &&
-                        <div className='indicator flex flex-col items-center space-y-2'>
-                            <div className='flex gap-3'>
-                                <Button onClick={handleWishlist} variant="contained" color='button_bg'>
-                                    <Favorite sx={{ color: "var(--primary-color)" }} />
-                                </Button>
-                                <Button variant="contained" color='button_bg'>
-                                    <ModeComment sx={{ color: "var(--primary-color)" }} />
-                                </Button>
-                            </div>
-                        </div>
+                        foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
                     }
                 </div>
-
-
-                <div className='details pt-3 space-y-1 group-hover-effect rounded-md'>
-                    <div className='name'>
-                        <h1><strong>{item?.name}</strong></h1>
-                    </div>
-
+                <div className='p-2'>
+                    <h2 className="text-xl font-bold capitalize">{place?.name}</h2>
+                    <p className="text-gray-600 capitalize">{place?.locality}</p>
+                    <Rating
+                        name="text-feedback"
+                        value={value}
+                        readOnly
+                        precision={0.5}
+                        emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
+                    />
                 </div>
-
             </div>
-
-
-
-        </>
+        </div>
     )
 }
 

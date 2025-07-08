@@ -18,23 +18,29 @@ const Usermaps = () => {
   const [position, setPosition] = useState(null);
 
   useEffect(() => {
+    let watchId; //watch id continously updating user longitude and latitude with watchposition html geolocation service
+
     if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(  //navigator.geolocation.getCurrentPosition html5 service geolocation is used to obtain longitude and latitude
+      watchId = navigator.geolocation.watchPosition(
         (pos) => {
           const userLat = pos.coords.latitude;
           const userLng = pos.coords.longitude;
-          setPosition([userLat, userLng]);  //long and lat are stored in the state
-          console.log('Latitude:', userLat);
-          console.log('Longitude:', userLng);
+          setPosition([userLat, userLng]);
         },
         (err) => {
-          console.error('Error fetching location:', err),
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-        }
+          console.error('Error watching location:', err);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     } else {
       console.log('Geolocation is not supported.');
     }
+
+    return () => {
+      if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
   }, []);
 
   return (

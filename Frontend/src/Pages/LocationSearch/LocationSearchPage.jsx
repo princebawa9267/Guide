@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import thinkingImg from '/src/assets/Thinking face-rafiki.png';
 import Navbar from '../../Components/Navbar';
 import Typewriter from '../../Components/typewriter';
 import Locations from './Locations';

@@ -91,8 +91,32 @@ router.get('/:user_id/reviews', async (req, res) => {
       .where('user_id', '==', req.params.user_id)
       .get();
 
-    const data = snapshot.docs.map(doc => doc.data());
-    res.json(data);
+    const reviews = snapshot.docs.map(doc => doc.data());
+    const resturentids=[...new Set(reviews.map(r => r.restaurant_id))];//fetching the resturant id from the reviews
+
+    //fetching resturant data from resturant table
+    const restaurantPromises=resturentids.map(id=>
+      db.collection('restaurants').doc(id).get()
+    );
+
+     const restaurantDocs = await Promise.all(restaurantPromises);
+    
+     const resturant_data={};//creating a object to store resturant name
+
+     restaurantDocs.forEach(doc => {
+      if(doc.exists){
+        resturant_data[doc.id]=doc.data().name;
+      }
+     });
+
+
+     const final_review=reviews.map(r=>({
+      ...r,
+      restaurant_name: resturant_data[r.restaurant_id] || 'Unknown',
+     }));
+
+    res.json(final_review);
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error fetching user reviews' });
