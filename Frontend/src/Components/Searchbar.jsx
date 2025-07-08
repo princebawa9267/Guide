@@ -79,7 +79,7 @@ const Searchbar = () => {
                 <li
                   key={idx}
                   onClick={() => handleSuggestionClick(sugg)}
-                  className="p-2 hover:bg-gray-200 cursor-pointer"
+                  className="p-2 hover:bg-gray-200 cursor-pointer capitalize"
                 >
                   {sugg}
                 </li>
