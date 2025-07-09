@@ -113,8 +113,12 @@ const Selected_item = () => {
           <Typewriter line="A spot loved, lived, and now shared — come see why it stands out." />
         </div>
       </div>
+       
 
+       {/* main div contain every thing out of design */}
       <div className="main flex flex-col items-center justify-center gap-15 mt-5">
+
+
         {/* Basic Information */}
         <div className="w-[90vw] appear-apply h-auto bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10 overflow-hidden relative p-6">
           <div className="h-1 w-full bg-[#8a3ab9] rounded-full mt-5 mb-4"></div>
@@ -166,6 +170,22 @@ const Selected_item = () => {
             </div>
           </div>
         </div>
+
+
+        {/* summary if aviavble */}
+        {restaurantData?.summary ? (
+          <div className="w-[90vw] h-[50vh] appear-apply  bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10 overflow-hidden relative p-6">
+          <div className="h-1 w-full bg-[#8a3ab9] rounded-full mt-5 mb-4"></div>
+          <span className="text-[#29264A] bg-white mx-2 text-2xl md:text-3xl font-bold absolute top-6 left-18 text-center mb-2">
+            Vibe Check
+          </span>
+          
+          <div className="w-full bg-transparent text-lg  text-gray-800 px-6 border-y h-[90%] border-gray-300 my-5 py-4">
+            <p className="text-lg">{restaurantData?.summary}</p>
+          </div>
+        </div>
+        ):(null)}
+        
 
 
 
