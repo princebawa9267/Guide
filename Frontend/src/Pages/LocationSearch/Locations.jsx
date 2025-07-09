@@ -1,16 +1,10 @@
 import React from 'react';
-import Hotel from './Hotel';
-import Vendor from './Vendor';
-import TouristPlaces from './TouristPlaces';
-import Restaurant from './Restaurant';
+import ItemLister from '../Items/ItemLister';
 
 const Locations = ({ locality }) => {
   return (
     <div>
-      <Hotel locality={locality} />
-      <Vendor locality={locality} />
-      <TouristPlaces locality={locality} />
-      <Restaurant locality={locality} />
+      <ItemLister/>
     </div>
   );
 };

@@ -323,7 +323,7 @@ const Selected_item = () => {
                 >
                   <p className="text-base md:text-lg">{review.review_text}</p>
                   <div className="flex items-center justify-between"><div className="text-lg">Upvotes: {review.upvotes || 0}</div>
-                    <div> {review.upvoted_by?.includes(auth.user.uid) ? (
+                    <div> {review.upvoted_by?.includes((auth.user != null ) ? auth.user.uid : "") ? (
                       <button
                         disabled
                         className="mt-2 px-4 py-1 text-lg cursor-not-allowed bg-gray-400 text-white rounded"
@@ -332,7 +332,7 @@ const Selected_item = () => {
                       </button>
                     ) : (
                       <button
-                        onClick={() => handleupvote(review.review_id, auth.user.uid)}
+                        onClick={() => handleupvote(review.review_id, (auth.user !== undefined) ? auth?.user?.uid : "")}
                         className="mt-2 px-4 py-1 text-lg cursor-pointer bg-[#8a3ab9] text-white rounded hover:bg-[#b87adb]"
                       >
                         👍 Upvote

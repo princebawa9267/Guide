@@ -10,7 +10,8 @@ export const fetchRestaurant = createAsyncThunk(
                 params: {
                     locality: query.locality,
                     min_cleanliness: query.min_cleanliness,
-                    price_range: query.price_range
+                    price_range: query.price_range,
+                    city : query.city
                 }
             });
             console.log(response.data); 

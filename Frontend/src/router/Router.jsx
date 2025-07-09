@@ -31,7 +31,7 @@ const Router = () => {
             </PrivateRoute>
           }></Route>
         <Route path='/user-verification' element={<UserVerification/>}></Route>
-        <Route path='/searched-location' element={<ItemLister/>}></Route>
+        <Route path='/searched-location' element={<LocationSearchPage/>}></Route>
         <Route path="/selected-item/:restaurantId" element={<Selected_item />} />
       </Routes>
     </div>

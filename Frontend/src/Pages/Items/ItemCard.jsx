@@ -59,8 +59,8 @@ const ItemCard = ({place}) => {
                     }
                 </div>
                 <div className='p-2'>
-                    <h2 className="text-xl font-bold capitalize">{place?.name}</h2>
-                    <p className="text-gray-600 capitalize">{place?.locality}</p>
+                    <p className="text-lg font-bold capitalize m-0">{place?.name}</p>
+                    <p className="text-gray-600 text-sm capitalize">{place?.locality}</p>
                     <Rating
                         name="text-feedback"
                         value={value}
