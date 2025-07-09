@@ -47,6 +47,7 @@ const Contribute = () => {
       name: lowerCasedValues.Name,
       locality: lowerCasedValues.Location,
       user_id: auth.user.uid,
+      city:lowerCasedValues.City,
       review_text: lowerCasedValues.Your_Experience,
       price_range: lowerCasedValues.Price_Level,
       food_quality: lowerCasedValues.Food_Quality,

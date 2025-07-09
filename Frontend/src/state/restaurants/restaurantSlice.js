@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import {api} from "../../config/api"; // Adjust the import path as necessary
+import { api } from "../../config/api"; // Adjust the import path as necessary
 
 export const fetchRestaurant = createAsyncThunk(
     "/restaurants/fetchRestaurant",
@@ -8,14 +8,18 @@ export const fetchRestaurant = createAsyncThunk(
         try {
             const response = await api.get("/restaurants", {
                 params: {
-                    locality: query.locality,
+                    locality: query.locality?.trim().toLowerCase(),
                     min_cleanliness: query.min_cleanliness,
-                    price_range: query.price_range
+                    price_range: query.price_range,
+                    city: query.city?.trim().toLowerCase()
                 }
             });
-            console.log(response.data); 
+            console.log(response.data);
             return response.data;
         } catch (error) {
+            if (error.response && error.response.status === 404) {
+                return rejectWithValue("No restaurants found for your search.");
+            }
             console.log("Error fetching restaurants:", error);
             return rejectWithValue(error.message);
         }
@@ -43,6 +47,7 @@ const restaurantSlice = createSlice({
             .addCase(fetchRestaurant.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+                state.restaurants = []; // clear old data
             });
     }
 });

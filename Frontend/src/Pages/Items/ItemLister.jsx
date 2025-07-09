@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { Box, Divider, Fab, FormControl, Icon, IconButton, Rating, ToggleButton, ToggleButtonGroup } from '@mui/material'
-import { FilterAlt, Star, Close } from '@mui/icons-material';
+import React, { useEffect, useState } from 'react';
+import {
+  Box, Fab, FormControl, ToggleButton, ToggleButtonGroup
+} from '@mui/material';
+import { FilterAlt, Close } from '@mui/icons-material';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -8,61 +10,57 @@ import { fetchRestaurant } from '../../state/restaurants/restaurantSlice';
 import { useAppDispatch, useAppSelector } from '../../state/store';
 
 import ItemCard from './ItemCard';
-
 import { HashLoader } from 'react-spinners';
 
-
-
-
 const ItemLister = () => {
-
   const dispatch = useAppDispatch();
   const restaurant = useAppSelector(store => store.restaurant);
 
   const [openFilter, setOpenFilter] = useState(false);
-  const [places, setPlaces] = useState([]); // State to hold restaurant data
   const [searchParams] = useSearchParams();
-  const locality = searchParams.get('locality'); // Get ?locality=XYZ from URL
+  const locality = searchParams.get('locality');
+  const city = searchParams.get('city'); // ✅ Get city from URL
 
   useEffect(() => {
-    dispatch(fetchRestaurant({ locality: locality }));
-  }, [locality]);
+    const filters = {};
+    if (locality) filters.locality = locality.trim().toLowerCase();
+    if (city) filters.city = city.trim().toLowerCase(); // ✅ Add city to filters
 
+    dispatch(fetchRestaurant(filters));
+  }, [locality, city, dispatch]); // ✅ include city
 
-
-
-  const [alignment, setAlignment] = useState('restaurants');  //Initial state of toggle button group
+  const [alignment, setAlignment] = useState('restaurants');
 
   const handleChange = (event, newAlignment) => {
     if (newAlignment !== null) {
       setAlignment(newAlignment);
     }
-  }
+  };
 
   return (
     <div className='flex relative min-h-[100vh] flex-col'>
-      {
-        console.log("My restaurants ", restaurant)
-      }
+
+      {/* Debug log */}
+      {console.log("Restaurants from API: ", restaurant)}
+
       {/* Filter icon */}
       <div className='flex flex-col space-y-2 items-end absolute bottom-5 right-5 z-10'>
         {
-          openFilter && <Box className='flex flex-col space-y-2 bg-white shadow-lg rounded-lg p-4'>
-            <h2 className='text-lg font-semibold mb-0'>Filter Options</h2>
-            <p className='text-sm text-gray-600'>Select your preferences to filter the items.</p>
-            <h4 className='font-bold'>Cleanliness : </h4>
-            <h4 className='font-bold'>Price : </h4>
-          </Box>
+          openFilter && (
+            <Box className='flex flex-col space-y-2 bg-white shadow-lg rounded-lg p-4'>
+              <h2 className='text-lg font-semibold mb-0'>Filter Options</h2>
+              <p className='text-sm text-gray-600'>Select your preferences to filter the items.</p>
+              <h4 className='font-bold'>Cleanliness : </h4>
+              <h4 className='font-bold'>Price : </h4>
+            </Box>
+          )
         }
-        {/* <FilterCard/> */}
-        <Fab color="primary" aria-label="add" className='transform transition-transform duration-200 ease-out scale-100' onClick={() => setOpenFilter(!openFilter)} >
-          {
-            openFilter ? <Close className='text-white ' /> : <FilterAlt className='text-white' />
-          }
+        <Fab color="primary" onClick={() => setOpenFilter(!openFilter)}>
+          {openFilter ? <Close className='text-white' /> : <FilterAlt className='text-white' />}
         </Fab>
       </div>
 
-
+      {/* Toggle Button */}
       <div className='flex justify-end items-center space-y-2.5 gap-2 mt-10 mr-2'>
         <FormControl size='small'>
           <ToggleButtonGroup
@@ -80,266 +78,31 @@ const ItemLister = () => {
         </FormControl>
       </div>
 
-      {/* <Divider /> */}
+      {/* Restaurant Cards */}
       <div className="mt-5 overflow-y-auto max-h-[82vh] border-t-1">
         <div>
-          <span style={{ display: restaurant?.loading ? 'flex' : 'none' }} className=" fixed top-0 left-0 w-full h-screen flex justify-center items-center bg-white z-50">
-            {
-              restaurant?.loading && <HashLoader size={150} />
-            }
-          </span>
+          {/* Loading Spinner */}
+          {restaurant?.loading && (
+            <span className="fixed top-0 left-0 w-full h-screen flex justify-center items-center bg-white z-50">
+              <HashLoader size={120} color="#8a3ab9" />
+            </span>
+          )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-5">
-
             {
-              !restaurant?.loading && (restaurant?.restaurants?.length > 0 ? restaurant.restaurants.map((place, index) =>
-                <ItemCard key={index} place={place} />) : "no places found")
+              !restaurant.loading && restaurant.restaurants.length > 0 ? (
+                restaurant.restaurants.map((place, index) => (
+                  <ItemCard key={index} place={place} />
+                ))
+              ) : !restaurant.loading && (
+                <p className="text-center text-gray-600 text-lg col-span-full">No places found.</p>
+              )
             }
-
-            {/* <div className='flex shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer bg-white rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                {
-                  foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                }
-              </div>
-              <div className='p-2'>
-                <h2 className="text-xl font-bold">Lucky Juice corner</h2>
-                <p className="text-gray-600">Professor Colony</p>
-                <Rating
-                  name="text-feedback"
-                  value={value}
-                  readOnly
-                  precision={0.5}
-                  emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
-                />
-              </div>
-            </div>
-
-
-            <div className='flex bg-white shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                {
-                  foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                }
-              </div>
-              <div className='p-2'>
-                <h2 className="text-xl font-bold">Lucky Juice corner</h2>
-                <p className="text-gray-600">Professor Colony</p>
-                <Rating
-                  name="text-feedback"
-                  value={value}
-                  readOnly
-                  precision={0.5}
-                  emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
-                />
-              </div>
-            </div>
-
-
-            <div className='flex shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer bg-white rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                {
-                  foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                }
-              </div>
-              <div className='p-2'>
-                <h2 className="text-xl font-bold">Lucky Juice corner</h2>
-                <p className="text-gray-600">Professor Colony</p>
-                <Rating
-                  name="text-feedback"
-                  value={value}
-                  readOnly
-                  precision={0.5}
-                  emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
-                />
-              </div>
-            </div>
-
-
-            <div className='flex shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer bg-white rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                {
-                  foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                }
-              </div>
-              <div className='p-2'>
-                <h2 className="text-xl font-bold">Lucky Juice corner</h2>
-                <p className="text-gray-600">Professor Colony</p>
-                <Rating
-                  name="text-feedback"
-                  value={value}
-                  readOnly
-                  precision={0.5}
-                  emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
-                />
-              </div>
-            </div>
-
-            <div className='flex shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer bg-white rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                {
-                  foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                }
-              </div>
-              <div className='p-2'>
-                <h2 className="text-xl font-bold">Lucky Juice corner</h2>
-                <p className="text-gray-600">Professor Colony</p>
-                <Rating
-                  name="text-feedback"
-                  value={value}
-                  readOnly
-                  precision={0.5}
-                  emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
-                />
-              </div>
-            </div>
-
-
-            <div className='flex bg-white shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                {
-                  foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                }
-              </div>
-              <div className='p-2'>
-                <h2 className="text-xl font-bold">Lucky Juice corner</h2>
-                <p className="text-gray-600">Professor Colony</p>
-                <Rating
-                  name="text-feedback"
-                  value={value}
-                  readOnly
-                  precision={0.5}
-                  emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
-                />
-              </div>
-            </div>
-
-
-            <div className='flex shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer bg-white rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                {
-                  foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                }
-              </div>
-              <div className='p-2'>
-                <h2 className="text-xl font-bold">Lucky Juice corner</h2>
-                <p className="text-gray-600">Professor Colony</p>
-                <Rating
-                  name="text-feedback"
-                  value={value}
-                  readOnly
-                  precision={0.5}
-                  emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
-                />
-              </div>
-            </div>
-
-
-            <div className='flex shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer bg-white rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                {
-                  foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                }
-              </div>
-              <div className='p-2'>
-                <h2 className="text-xl font-bold">Lucky Juice corner</h2>
-                <p className="text-gray-600">Professor Colony</p>
-                <Rating
-                  name="text-feedback"
-                  value={value}
-                  readOnly
-                  precision={0.5}
-                  emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
-                />
-              </div>
-            </div>
-
-            <div className='flex shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer bg-white rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                {
-                  foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                }
-              </div>
-              <div className='p-2'>
-                <h2 className="text-xl font-bold">Lucky Juice corner</h2>
-                <p className="text-gray-600">Professor Colony</p>
-                <Rating
-                  name="text-feedback"
-                  value={value}
-                  readOnly
-                  precision={0.5}
-                  emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
-                />
-              </div>
-            </div>
-
-
-            <div className='flex bg-white shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                {
-                  foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                }
-              </div>
-              <div className='p-2'>
-                <h2 className="text-xl font-bold">Lucky Juice corner</h2>
-                <p className="text-gray-600">Professor Colony</p>
-                <Rating
-                  name="text-feedback"
-                  value={value}
-                  readOnly
-                  precision={0.5}
-                  emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
-                />
-              </div>
-            </div>
-
-
-            <div className='flex shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer bg-white rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                {
-                  foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                }
-              </div>
-              <div className='p-2'>
-                <h2 className="text-xl font-bold">Lucky Juice corner</h2>
-                <p className="text-gray-600">Professor Colony</p>
-                <Rating
-                  name="text-feedback"
-                  value={value}
-                  readOnly
-                  precision={0.5}
-                  emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
-                />
-              </div>
-            </div>
-
-
-            <div className='flex shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer bg-white rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-              <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                {
-                  foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                }
-              </div>
-              <div className='p-2'>
-                <h2 className="text-xl font-bold">Lucky Juice corner</h2>
-                <p className="text-gray-600">Professor Colony</p>
-                <Rating
-                  name="text-feedback"
-                  value={value}
-                  readOnly
-                  precision={0.5}
-                  emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
-                />
-              </div>
-            </div> */}
-
-
           </div>
         </div>
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default ItemLister
+export default ItemLister;
