@@ -35,6 +35,10 @@ router.get('/', async (req, res) => {
   let query = db.collection('restaurants');
   const { locality, min_cleanliness, price_range } = req.query;
 
+  if (city) {
+    query = query.where('city', '==', city);
+  }
+
   if (locality) {
     query = query.where('locality', '==', locality);
   }

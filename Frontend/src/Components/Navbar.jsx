@@ -97,7 +97,7 @@ const Navbar = () => {
                                     >
                                         <span className="sr-only">Open user menu</span>
                                         {
-                                            (auth.user.photoURL) ? (<img src={userImageUrl} alt='user-image' className="w-10 h-10 rounded-full" />) : (<FaUser className='h-5' />)
+                                            (auth?.user?.photoURL) ? (<img src={userImageUrl} alt='user-image' className="w-10 h-10 rounded-full" />) : (<FaUser className='h-5' />)
                                         }
                                     </button>
                                 </div>

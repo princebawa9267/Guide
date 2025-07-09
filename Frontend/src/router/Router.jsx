@@ -12,6 +12,7 @@ import Selected_item from '../Pages/selected_item'
 import Shop from '../Pages/Shop'
 import PrivateRoute from './PrivateRoute'
 import { useAppSelector } from '../state/store'
+import ItemLister from '../Pages/Items/ItemLister'
 
 const Router = () => {
 
@@ -31,7 +32,7 @@ const Router = () => {
             </PrivateRoute>
           }></Route>
         <Route path='/user-verification' element={<UserVerification/>}></Route>
-        <Route path='/searched-location' element={<LocationSearchPage/>}></Route>
+        <Route path='/searched-location' element={<ItemLister/>}></Route>
         <Route path="/selected-item/:restaurantId" element={<Selected_item />} />
         <Route path="/List_Your_Shop" element={<Shop/>}/>
       </Routes>

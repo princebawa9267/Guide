@@ -2,10 +2,12 @@ import {combineReducers, configureStore} from "@reduxjs/toolkit"
 import { useDispatch, useSelector } from "react-redux";
 // import {thunk} from 'redux-thunk';
 import authSlice from "./auth/authSlice"
+import restaurantSlice from "./restaurants/restaurantSlice";
 
 // 1. Combine your reducers here
 const rootReducer = combineReducers({
     auth : authSlice,
+    restaurant : restaurantSlice,
 });
 
 // 2. Create the store

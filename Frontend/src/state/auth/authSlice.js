@@ -1,4 +1,3 @@
-
 // Firebase Setup
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth';
@@ -100,73 +99,72 @@ export const signInWithGoogle = createAsyncThunk("/auth/signInWithGoogle",
 )
 
 export const logoutUser = createAsyncThunk("/auth/logoutUser",
-    async({dispatch},{rejectWithValue}) => {
-        try{
+    async ({ dispatch }, { rejectWithValue }) => {
+        try {
             await signOut(auth);
             dispatch(setUser(null));
         }
-        catch(error){
+        catch (error) {
             return rejectWithValue(error.message);
         }
     }
 )
 
-// export const authenticate = createAsyncThunk("/auth/authenticate",
-//     async (navigate, { rejectWithValue }) => {
-//         try {
-//             onAuthStateChanged(auth, async (user) => {
-//                 if (user) {
-//                     if (!user.emailVerified) {
-//                         console.log("User email id is not verified yet")
-//                     }
-//                     else {
-//                         navigate("/")
-//                         const providerId = user.providerData[0]?.providerId;
-//                         if (providerId === "password") {
-//                             console.log("User Details ", user);
-//                             const docRef = doc(db, "Users", String(user.uid));
-//                             const docSnap = await getDoc(docRef);
-//                             return {
-//                                 uid: user.uid,
-//                                 email: user.email,
-//                                 displayName: `${docSnap.data().firstName} ${docSnap.data().lastName}`,
-//                                 emailVerified: user.emailVerified,
-//                                 photoURL: user.photoURL
-//                             }
-//                         }
-//                         else if (providerId === "google.com") {
-//                             console.log("User Details with google", user);
-//                             return {
-//                                 uid: user.uid,
-//                                 email: user.email,
-//                                 displayName: user.displayName,
-//                                 emailVerified: user.emailVerified,
-//                                 photoURL: user.photoURL
-//                             }
-//                         }
-//                     }
-//                 }
-//             })
-//         }
-//         catch (error) {
+export const authenticate = createAsyncThunk("/auth/authenticate",
+    async ({navigate,dispatch}, { rejectWithValue }) => {
+        try {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    if (!user.emailVerified) {
+                        console.log("User email id is not verified yet");
+                    }
+                    else {
+                        const providerId = user.providerData[0]?.providerId;
+                        if (providerId === "google.com") {
+                            console.log("User Details with google", user);
+                            dispatch(setUser({
+                                uid: user?.uid,
+                                email: user?.email,
+                                displayName: user?.displayName,
+                                emailVerified: user?.emailVerified,
+                                photoURL: user?.photoURL
+                            }))
+                        }
+                        else if (providerId === "password") {
+                            console.log("User Details ", user);
+                            const docRef = doc(db, "Users", String(user.uid));
+                            const docSnap = await getDoc(docRef);
+                            dispatch(setUser({
+                                uid: user.uid,
+                                email: user.email,
+                                displayName: `${docSnap.data().firstName} ${docSnap.data().lastName}`,
+                                emailVerified: user.emailVerified,
+                                photoURL: user.photoURL
+                            }))
+                        }
+                    }
+                }
+            })
+        }
+        catch (error) {
 
-//         }
-//     }
-// )
+        }
+    }
+)
 
 const initialState = {
     isLoggedIn: false,
     user: null,
     loading: false,
     error: null,
-    dataLoaded: false,
+    notLoadedDataYet : true, // This will be set to false once the user data is loaded
 }
 
 const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        setUser : (state,action) =>{
+        setUser: (state, action) => {
             state.user = action.payload;
             state.isLoggedIn = !!action.payload;
             state.error = null;
@@ -184,13 +182,11 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.user = action.payload;
                 state.isLoggedIn = true;
-                state.dataLoaded = true;
             })
             .addCase(createAccountWithEmailAndPassword.rejected, (state, action) => {
                 state.loading = false;
                 state.user = null;
                 state.isLoggedIn = false;
-                state.dataLoaded = false;
                 state.error = action.payload
             })
             .addCase(loginUserWithEmailAndPassword.pending, (state) => {
@@ -221,20 +217,29 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.error;
             })
-            // .addCase(authenticate.pending,(state) => {
+        .addCase(authenticate.pending,(state) => {
+            state.loading = true;
+            state.error = null;
+            state.isLoggedIn = false;
+            state.user = null;
+            console.log("Authenticating user...");
+        })
+        .addCase(authenticate.fulfilled, (state,action) => {
+            state.isLoggedIn = true;
+            state.error = null;
+            state.loading = false;
+            state.user = action.payload;
 
-            // })
-            // .addCase(authenticate.fulfilled, (state,action) => {
-            //     state.isLoggedIn = false;
-            //     state.error = null;
-            //     state.user = action.payload;
-            //     console.log(action.payload);
-            // })
-            // .addCase(authenticate.rejected, (state,action) => {
-            //     state.isLoggedIn = false;
-            //     state.error = action.payload;
-            //     state.user = null;
-            // })
+            state.notLoadedDataYet = false; // Set to false once the user data is loaded
+            console.log(action.payload);
+        })
+        .addCase(authenticate.rejected, (state,action) => {
+            state.isLoggedIn = false;
+            state.error = action.payload;
+            state.loading = false;
+            state.dataLoaded = false;
+            state.user = null;
+        })
     }
 })
 
