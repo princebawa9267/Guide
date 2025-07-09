@@ -51,9 +51,6 @@ const ItemLister = () => {
     dispatch(fetchRestaurant({ locality: locality }));
   }, [locality]);
 
-
-
-
   const [alignment, setAlignment] = useState('restaurants');  //Initial state of toggle button group
 
   const handleChange = (event, newAlignment) => {
