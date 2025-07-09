@@ -33,10 +33,14 @@ router.post('/', async (req, res) => {
 // Get all restaurants
 router.get('/', async (req, res) => {
   let query = db.collection('restaurants');
-  const { locality, min_cleanliness, price_range } = req.query;
+  const {city,locality, min_cleanliness, price_range } = req.query;
+
+  if (city) {
+    query = query.where('city', '==', city.trim().toLowerCase());
+  }
 
   if (locality) {
-    query = query.where('locality', '==', locality);
+    query = query.where('locality', '==', locality.toLowerCase());
   }
   if (min_cleanliness) {
     query = query.where('avg_cleanliness_score', '>=', Number(min_cleanliness));

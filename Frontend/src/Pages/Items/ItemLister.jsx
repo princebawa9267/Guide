@@ -9,7 +9,6 @@ import { fetchRestaurant } from '../../state/restaurants/restaurantSlice';
 import { useAppDispatch, useAppSelector } from '../../state/store';
 
 import ItemCard from './ItemCard';
-
 import { HashLoader } from 'react-spinners';
 
 
@@ -38,42 +37,47 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
 
 
 const ItemLister = () => {
-
   const dispatch = useAppDispatch();
   const restaurant = useAppSelector(store => store.restaurant);
 
   const [openFilter, setOpenFilter] = useState(false);
-  const [places, setPlaces] = useState([]); // State to hold restaurant data
   const [searchParams] = useSearchParams();
-  const locality = searchParams.get('locality'); // Get ?locality=XYZ from URL
+  const locality = searchParams.get('locality');
+  const city = searchParams.get('city'); // ✅ Get city from URL
 
   useEffect(() => {
-    dispatch(fetchRestaurant({ locality: locality }));
-  }, [locality]);
+    const filters = {};
+    if (locality) filters.locality = locality.trim().toLowerCase();
+    if (city) filters.city = city.trim().toLowerCase(); // ✅ Add city to filters
 
-  const [alignment, setAlignment] = useState('restaurants');  //Initial state of toggle button group
+    dispatch(fetchRestaurant(filters));
+  }, [locality, city, dispatch]); // ✅ include city
+
+  const [alignment, setAlignment] = useState('restaurants');
 
   const handleChange = (event, newAlignment) => {
     if (newAlignment !== null) {
       setAlignment(newAlignment);
     }
-  }
+  };
 
   return (
     <div className='flex relative min-h-[100vh] flex-col'>
 
-      {
-        console.log("My restaurants ", restaurant)
-      }
+      {/* Debug log */}
+      {console.log("Restaurants from API: ", restaurant)}
+
       {/* Filter icon */}
       <div className='flex flex-col space-y-2 items-end absolute bottom-5 right-5 z-10'>
         {
-          openFilter && <Box className='flex flex-col space-y-2 bg-white shadow-lg rounded-lg p-4'>
-            <h2 className='text-lg font-semibold mb-0'>Filter Options</h2>
-            <p className='text-sm text-gray-600'>Select your preferences to filter the items.</p>
-            <h4 className='font-bold'>Cleanliness : </h4>
-            <h4 className='font-bold'>Price : </h4>
-          </Box>
+          openFilter && (
+            <Box className='flex flex-col space-y-2 bg-white shadow-lg rounded-lg p-4'>
+              <h2 className='text-lg font-semibold mb-0'>Filter Options</h2>
+              <p className='text-sm text-gray-600'>Select your preferences to filter the items.</p>
+              <h4 className='font-bold'>Cleanliness : </h4>
+              <h4 className='font-bold'>Price : </h4>
+            </Box>
+          )
         }
         {/* <FilterCard/> */}
         <Fab  aria-label="add" className='bg-[#8a3ab9] transform transition-transform duration-200 ease-out scale-100' onClick={() => setOpenFilter(!openFilter)} >
@@ -139,10 +143,14 @@ const ItemLister = () => {
         <div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-5">
-
             {
-              !restaurant?.loading && (restaurant?.restaurants?.length > 0 ? restaurant.restaurants.map((place, index) =>
-                <ItemCard key={index} place={place} />) : "no places found")
+              !restaurant.loading && restaurant.restaurants.length > 0 ? (
+                restaurant.restaurants.map((place, index) => (
+                  <ItemCard key={index} place={place} />
+                ))
+              ) : !restaurant.loading && (
+                <p className="text-center text-gray-600 text-lg col-span-full">No places found.</p>
+              )
             }
 
           </div>
@@ -150,7 +158,7 @@ const ItemLister = () => {
       </div> */}
 
     </div>
-  )
-}
+  );
+};
 
-export default ItemLister
+export default ItemLister;

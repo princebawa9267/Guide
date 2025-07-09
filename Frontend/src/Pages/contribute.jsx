@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
 import Typewriter from '../Components/typewriter';
@@ -9,17 +9,28 @@ import Form_length from '../Components/form_length';
 import Usermap_form from '../Components/Usermap_form';
 import { useState } from 'react';
 import { useAppSelector } from '../state/store';
+import { collection, getDocs } from 'firebase/firestore';//importing firebase methods to read data of db
+import { db } from '../../src/register.js';//importing database from the regiter page where the firebase is registered
+import TimePicker from 'react-time-picker';
+import 'react-time-picker/dist/TimePicker.css';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Contribute = () => {
 
   const [markedposition, setmarkedposition] = useState(null);
+  const [openingTime, setOpeningTime] = useState('');
+  const [closingTime, setClosingTime] = useState('');
+  const [openhours, setopenhours] = useState('')
+
 
   // Getting user id
-  const {auth} = useAppSelector(store=> store);
+  const { auth } = useAppSelector(store => store);
 
   // New handleSubmit function to handle the API call
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     console.log('Submitting:', values);
+    toast.loading("Submitting your review...", { toastId: "submitToast" });
 
 
     const lowerCasedValues = {
@@ -28,15 +39,15 @@ const Contribute = () => {
       Location: values.Location.toLowerCase(),
       City: values.City.toLowerCase(),
       Popular_Dish: values.Popular_Dish.toLowerCase(),
-      Your_Experience: values.Your_Experience.toLowerCase(),
-      Open_Hours: values.Open_Hours.toLowerCase()
+      Your_Experience: values.Your_Experience.toLowerCase()
     };
 
-  // Prepare the payload for the API call
-     const payload = {
+    // Prepare the payload for the API call
+    const payload = {
       name: lowerCasedValues.Name,
       locality: lowerCasedValues.Location,
       user_id: auth.user.uid,
+      city:lowerCasedValues.City,
       review_text: lowerCasedValues.Your_Experience,
       price_range: lowerCasedValues.Price_Level,
       food_quality: lowerCasedValues.Food_Quality,
@@ -45,14 +56,14 @@ const Contribute = () => {
       location_of_restaurant: lowerCasedValues.City,
       latitude: values.latitude,
       longitude: values.longitude,
-      open_hours: lowerCasedValues.Open_Hours,
+      open_hours: openhours,
       images: values.Images,
       best_dishes: [lowerCasedValues.Popular_Dish],
     };
 
     try {
       // Make API call to backend
-    const response = await fetch('http://localhost:3000/reviews', {
+      const response = await fetch('http://localhost:3000/reviews', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,21 +74,35 @@ const Contribute = () => {
       const result = await response.json();
 
       if (response.ok) {
-        alert("Submitted successfully!");
+        toast.update("submitToast", {
+          render: "Submitted successfully!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
         console.log('API Response:', result);
         resetForm();
       } else {
-        alert(`Failed to submit. ${result.error || 'Something went wrong'}`);
+         toast.update("submitToast", {
+        render: result.error || "Failed to submit",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
       }
 
     } catch (error) {
-      console.error('Error while submitting:', error);
-      alert("Something went wrong. Please try again later.");
+       toast.update("submitToast", {
+      render: "Error occurred. Please try again.",
+      type: "error",
+      isLoading: false,
+      autoClose: 3000,
+    });
     } finally {
       setSubmitting(false);
     }
   };
-  
+
 
 
   return (
@@ -104,7 +129,7 @@ const Contribute = () => {
 
       <div className='main flex flex-col items-center justify-center gap-15 mt-5'>
         {/* Intro Section */}
-        <div className="w-[90vw] max-w-7xl appear-apply h-[70vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10 flex flex-col md:flex-row justify-center items-center overflow-hidden p-6">
+        <div className="w-[90vw] max-w-7xl appear-apply h-[60vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10 flex flex-col md:flex-row justify-center items-center overflow-hidden p-6">
           <div className="w-full md:w-1/2 h-full flex flex-col justify-around px-4 py-4 space-y-3">
             <div className="h-1 w-full bg-[#8a3ab9] rounded-full"></div>
             <p className="text-sm md:text-base text-[#29264A] leading-relaxed font-medium overflow-y-auto">
@@ -123,7 +148,7 @@ const Contribute = () => {
           initialValues={{
             Name: "", Location: "", City: "", latitude: '', longitude: '', Popular_Dish: "", Price_Level: "",
             Food_Quality: "", Cleanliness: "", Service: "",
-            Open_Hours: "", Images:[] , Your_Experience: ""
+            Open_Hours: openhours, Images: [], Your_Experience: ""
           }}
           validate={values => {
             const errors = {};
@@ -177,7 +202,7 @@ const Contribute = () => {
                     </p>
                   )}
                   <Field type="hidden" name="latitude" value={markedposition?.[0] ? parseFloat(markedposition[0].toFixed(4)) : ''} />
-                  <Field type="hidden" name="longitude"  value={markedposition?.[1] ? parseFloat(markedposition[1].toFixed(4)) : ''} />
+                  <Field type="hidden" name="longitude" value={markedposition?.[1] ? parseFloat(markedposition[1].toFixed(4)) : ''} />
                   <Usermap_form onLocationSelect={setmarkedposition} setFieldValue={setFieldValue} />
                 </div>
               </label>
@@ -271,7 +296,7 @@ const Contribute = () => {
                             />
                           ))}
                         </div>
-                      
+
 
                         {/* Optional Remove Button */}
                         <button
@@ -296,8 +321,9 @@ const Contribute = () => {
                 <ErrorMessage name="Service" component="div" className="text-red-500 text-sm" />
               </label>
 
+
               {/* Poem */}
-              <div className='bg-white w-full m-3 p-1 text-lg flex flex-col justify-center items-center gap-1 shadow-xl hover:shadow-2xl transition-shadow duration-300 h-[25vh]  rounded-3xl tracking-tight'>
+              <div className='bg-white w-full text-center max-w-3xl min-h-[150px] tracking-tight leading-snug m-3 p-1 text-lg flex flex-col justify-center items-center gap-1 shadow-xl hover:shadow-2xl transition-shadow duration-300 h-[25vh]  rounded-3xl '>
 
                 <span>" Drop a tip, a tale, a place you found,</span>
                 <span>Help the next explorer look around.</span>
@@ -309,9 +335,45 @@ const Contribute = () => {
               {/* open hours */}
               <label className='flex flex-col justify-center gap-2 w-full m-3 p-4 h-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300'>
                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Open Hours :</span>
-                <Field type="text" name="Open_Hours" className="w-full border-none text-[#29264A] bg-transparent text-lg px-2 focus:ring-[#8a3ab9] placeholder-gray-400 focus:outline-none" placeholder="Enter Open Hours" />
-                <div className='h-1 w-full rounded-full bg-[#8a3ab9]'></div>
+                <div className="flex items-center gap-4 space-y-4 w-full max-w-sm">
+                  <div>
+                    <label className="block font-semibold">Opening Time</label>
+                    <TimePicker
+                      onChange={(val) => {
+                        setOpeningTime(val);
+                      }}
+                      value={openingTime}
+                      disableClock={true}
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold">Closing Time</label>
+                    <TimePicker
+                      onChange={(val) => {
+                        setClosingTime(val);
+                      }}
+                      value={closingTime}
+                      disableClock={true}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const combined = `${openingTime} - ${closingTime}`;
+                      setopenhours(combined);
+                      setFieldValue('Open_Hours', combined);
+                      toast.success("open hours are set successfully!");
+
+                    }}
+                    className="px-2 py-2 cursor-pointer bg-purple-600 text-white rounded hover:bg-purple-700"
+                  >
+                    Set
+                  </button>
+                </div>
               </label>
+
+
+
 
               {/* Submit */}
               <div className='flex justify-center items-center col-span-3 mt-4 cursor-pointer'>
