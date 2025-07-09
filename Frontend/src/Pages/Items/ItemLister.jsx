@@ -3,6 +3,9 @@ import { Box, Divider, Fab, FormControl, Icon, IconButton, Rating, ToggleButton,
 import { FilterAlt, Star, Close } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 
+import thinkingImg from '/src/assets/Thinking face-rafiki.png';
+
+
 import { useSearchParams } from 'react-router-dom';
 
 import { fetchRestaurant } from '../../state/restaurants/restaurantSlice';
@@ -15,22 +18,24 @@ import { HashLoader } from 'react-spinners';
 
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+  // backgroundColor: '#8a3ab9', // Base color
+  color: 'white',
   gap: '2rem',
   [`& .${toggleButtonGroupClasses.firstButton}, & .${toggleButtonGroupClasses.middleButton}`]:
-    {
-      borderTopRightRadius: (theme.vars || theme).shape.borderRadius,
-      borderBottomRightRadius: (theme.vars || theme).shape.borderRadius,
-    },
+  {
+    borderTopRightRadius: (theme.vars || theme).shape.borderRadius,
+    borderBottomRightRadius: (theme.vars || theme).shape.borderRadius,
+  },
   [`& .${toggleButtonGroupClasses.lastButton}, & .${toggleButtonGroupClasses.middleButton}`]:
-    {
-      borderTopLeftRadius: (theme.vars || theme).shape.borderRadius,
-      borderBottomLeftRadius: (theme.vars || theme).shape.borderRadius,
-      borderLeft: `1px solid ${(theme.vars || theme).palette.divider}`,
-    },
+  {
+    borderTopLeftRadius: (theme.vars || theme).shape.borderRadius,
+    borderBottomLeftRadius: (theme.vars || theme).shape.borderRadius,
+    borderLeft: `1px solid ${(theme.vars || theme).palette.divider}`,
+  },
   [`& .${toggleButtonGroupClasses.lastButton}.${toggleButtonClasses.disabled}, & .${toggleButtonGroupClasses.middleButton}.${toggleButtonClasses.disabled}`]:
-    {
-      borderLeft: `1px solid ${(theme.vars || theme).palette.action.disabledBackground}`,
-    },
+  {
+    borderLeft: `1px solid ${(theme.vars || theme).palette.action.disabledBackground}`,
+  },
 }));
 
 
@@ -80,10 +85,14 @@ const ItemLister = () => {
           )
         }
         {/* <FilterCard/> */}
-        <Fab  aria-label="add" className='bg-[#8a3ab9] transform transition-transform duration-200 ease-out scale-100' onClick={() => setOpenFilter(!openFilter)} >
-          {
-            openFilter ? <Close className='text-white ' /> : <FilterAlt className='text-white' />
-          }
+        <Fab
+          aria-label="add"
+          className={`bg-[#8a3ab9] text-white transform transition-transform duration-200 ease-out scale-100 
+        ${openFilter ? 'bg-[#e5dcf8] hover:bg-[#9b4ec3]' : 'hover:bg-[#6a2992]'} 
+        hover:scale-110`} // Hover effects
+          onClick={() => setOpenFilter(!openFilter)}
+        >
+          {openFilter ? <Close className='text-white' /> : <FilterAlt className='text-white' />}
         </Fab>
       </div>
 
@@ -96,20 +105,57 @@ const ItemLister = () => {
             exclusive
             onChange={handleChange}
             aria-label="items"
+            className='text-[#8a3ab9]'
           >
-            <ToggleButton value="restaurants">Restaurants</ToggleButton>
-            <ToggleButton value="parks">Parks</ToggleButton>
-            <ToggleButton value="hotels">Hotels</ToggleButton>
-            <ToggleButton value="vendors">Vendors</ToggleButton>
+            <ToggleButton value="restaurants" sx={{
+              '&:hover': { backgroundColor: '#e5dcf8' }, '&.Mui-selected': {
+                backgroundColor: '#e5dcf8', // Active (selected) color
+                color: '#8a3ab9', // Text color when active
+                '&.Mui-selected:hover': {
+                  backgroundColor: '#e5dcf8', // Keep active color even on hover
+                  color: '#8a3ab9',
+                },
+              },
+            }}>Restaurants</ToggleButton>
+            <ToggleButton value="parks" sx={{
+              '&:hover': { backgroundColor: '#e5dcf8' }, '&.Mui-selected': {
+                backgroundColor: '#e5dcf8', // Active (selected) color
+                color: '#8a3ab9', // Text color when active
+                '&.Mui-selected:hover': {
+                  backgroundColor: '#e5dcf8', // Keep active color even on hover
+                  color: '#8a3ab9',
+                },
+              },
+            }}>Parks</ToggleButton>
+            <ToggleButton value="hotels" sx={{
+              '&:hover': { backgroundColor: '#e5dcf8' }, '&.Mui-selected': {
+                backgroundColor: '#e5dcf8', // Active (selected) color
+                color: '#8a3ab9', // Text color when active
+                '&.Mui-selected:hover': {
+                  backgroundColor: '#e5dcf8', // Keep active color even on hover
+                  color: '#8a3ab9',
+                },
+              },
+            }}>Hotels</ToggleButton>
+            <ToggleButton value="vendors" sx={{
+              '&:hover': { backgroundColor: '#e5dcf8' }, '&.Mui-selected': {
+                backgroundColor: '#e5dcf8', // Active (selected) color
+                color: '#8a3ab9', // Text color when active
+                '&.Mui-selected:hover': {
+                  backgroundColor: '#e5dcf8', // Keep active color even on hover
+                  color: '#8a3ab9',
+                },
+              },
+            }}>Vendors</ToggleButton>
           </StyledToggleButtonGroup>
         </FormControl>
       </div>
 
-       <span style={{ display: restaurant?.loading ? 'flex' : 'none' }} className="flex justify-center items-center bg-white z-50">
-            {
-               <HashLoader size={120} loading={restaurant?.loading} color='#8a3ab9'/>
-            }
-          </span>
+      <span style={{ display: restaurant?.loading ? 'flex' : 'none' }} className="flex justify-center items-center bg-white z-50">
+        {
+          <HashLoader size={120} loading={restaurant?.loading} color='#8a3ab9' />
+        }
+      </span>
 
       {/* <Divider /> */}
       {
@@ -124,17 +170,22 @@ const ItemLister = () => {
                   </div>
                 ))
               }
-               
+
             </div>
           </div>
-        ) : (
-          <div className='flex justify-center items-center h-[50vh]'>
-            <h2 className='text-xl font-semibold text-gray-600'>No items found in this locality.</h2>
+        ) : !restaurant?.loading && (
+          <div className="w-full h-[50vh] flex flex-col justify-center items-center text-[#8a3ab9]">
+            <img
+              src={thinkingImg}
+              alt="No reviews yet"
+              className="h-[40%] opacity-80 mb-4"
+            />
+            <p className="text-lg font-semibold">Not any restaurant existed yet</p>
           </div>
         )
       }
-      
-      
+
+
 
       {/* <div className="mt-5 overflow-y-auto max-h-[82vh] border-t-1">
         <div className="text-[#29264A] text-2xl md:text-3xl font-bold text-center mb-2">
