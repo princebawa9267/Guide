@@ -43,7 +43,6 @@ const ItemCard = ({ place }) => {
             try {
                 const response = await axios.get('http://localhost:3000/reviews');
                 const reviews = response.data;
-                console.log(reviews);
 
                 const images = {};
                 reviews.forEach(review => {

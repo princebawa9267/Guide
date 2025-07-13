@@ -110,7 +110,6 @@ router.get('/', async (req, res) => {
       image_url,
     }));
 
-    console.log('Final result:', result);
     res.json(result);
   } catch (error) {
     console.error('Error fetching review images:', error);
