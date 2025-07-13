@@ -8,7 +8,18 @@ import { useSearchParams } from 'react-router-dom';//hook use to read and modify
 const LocationSearchPage = () => {
   const [searchParams] = useSearchParams();
   const locality = searchParams.get('locality'); // Get ?locality=XYZ from URL
+  const city = searchParams.get('city'); // Get ?city=XYZ from URL
+  const restaurant_id = searchParams.get('restaurant_id'); // Get ?restaurant_id=XYZ from URL
   const [line, setLine] = useState('');
+
+  
+ console.log(restaurant_id);
+  useEffect(()=>{
+    if(city){
+      setLine(`Explore the best places in ${city}`);
+    }
+
+  },[city])
 
   useEffect(() => {
     if (locality) {

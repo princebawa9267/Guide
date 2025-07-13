@@ -86,6 +86,39 @@ router.get('/restaurant/:restaurant_id', async (req, res) => {
   res.json(data);
 });
 
+// Route to get 1 image per restaurant from reviews
+router.get('/', async (req, res) => {
+  try {
+    const snapshot = await db.collection('reviews').get();
+
+    const imagesByRestaurant = {};
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+
+      const restaurantId = data.restaurant_id;
+      const imagesArray = data.images;
+
+      // Check that the image array exists and has at least one image
+      if (restaurantId && Array.isArray(imagesArray) && imagesArray.length > 0 && !imagesByRestaurant[restaurantId]) {
+        imagesByRestaurant[restaurantId] = imagesArray[0]; // take the first image
+      }
+    });
+
+    const result = Object.entries(imagesByRestaurant).map(([restaurant_id, image_url]) => ({
+      restaurant_id,
+      image_url,
+    }));
+
+    console.log('Final result:', result);
+    res.json(result);
+  } catch (error) {
+    console.error('Error fetching review images:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 // Get all reviews by a user
 router.get('/:user_id/reviews', async (req, res) => {
   try {
@@ -94,28 +127,28 @@ router.get('/:user_id/reviews', async (req, res) => {
       .get();
 
     const reviews = snapshot.docs.map(doc => doc.data());
-    const resturentids=[...new Set(reviews.map(r => r.restaurant_id))];//fetching the resturant id from the reviews
+    const resturentids = [...new Set(reviews.map(r => r.restaurant_id))];//fetching the resturant id from the reviews
 
     //fetching resturant data from resturant table
-    const restaurantPromises=resturentids.map(id=>
+    const restaurantPromises = resturentids.map(id =>
       db.collection('restaurants').doc(id).get()
     );
 
-     const restaurantDocs = await Promise.all(restaurantPromises);
-    
-     const resturant_data={};//creating a object to store resturant name
+    const restaurantDocs = await Promise.all(restaurantPromises);
 
-     restaurantDocs.forEach(doc => {
-      if(doc.exists){
-        resturant_data[doc.id]=doc.data().name;
+    const resturant_data = {};//creating a object to store resturant name
+
+    restaurantDocs.forEach(doc => {
+      if (doc.exists) {
+        resturant_data[doc.id] = doc.data().name;
       }
-     });
+    });
 
 
-     const final_review=reviews.map(r=>({
+    const final_review = reviews.map(r => ({
       ...r,
       restaurant_name: resturant_data[r.restaurant_id] || 'Unknown',
-     }));
+    }));
 
     res.json(final_review);
 

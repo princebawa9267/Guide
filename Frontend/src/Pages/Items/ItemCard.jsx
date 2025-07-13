@@ -1,62 +1,84 @@
 import React, { useEffect, useState } from 'react'
-import {  Rating} from '@mui/material'
+import { Rating } from '@mui/material'
 import { Star } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import Lottie from 'lottie-react';
+import resturent_animation from '../../assets/resturent_delivery.json';
+import axios from 'axios';
 
 
 
-const ItemCard = ({place}) => {
+
+const ItemCard = ({ place }) => {
 
     const [isHovered, setIsHovered] = useState(false);
     const [currentImage, setCurrentImage] = useState(0);
     const navigate = useNavigate();
+    const [reviewImages, setReviewImages] = useState([]); // key = restaurant_id
 
-    const foodImage = [
-        "https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg",
-        "https://tse1.mm.bing.net/th/id/OIP.nHdjesbJ7Yc8yl2bJQuY7wHaEo?pid=ImgDet&w=474&h=296&rs=1&o=7&rm=3",
-        "https://tse2.mm.bing.net/th/id/OIP.ak3XveK3X42VVIh9fOixwgHaFB?rs=1&pid=ImgDetMain&o=7&rm=3"];
-
-    useEffect(() => {
-        let interval
-        if (isHovered) {
-            interval = setInterval(() => {
-                setCurrentImage((prevImage) => (prevImage + 1) % foodImage.length)
-            }, 1000);
-        }
-        return () => {
-            if (interval) {
-                clearInterval(interval);
-            }
-        };
-    }, [isHovered])
 
     const labels = {
-    0.5: 'Useless',
-    1: 'Useless+',
-    1.5: 'Poor',
-    2: 'Poor+',
-    2.5: 'Ok',
-    3: 'Ok+',
-    3.5: 'Good',
-    4: 'Good+',
-    4.5: 'Excellent',
-    5: 'Excellent+',
-  };
-
-  const value = place?.avg_food_quality;
-
-  const handleClick = (data) => {
-    // Navigate to the selected item page with the place data
-    navigate(`/selected-item/${data.restaurant_id}`, { state: data });
+        0.5: 'Useless',
+        1: 'Useless+',
+        1.5: 'Poor',
+        2: 'Poor+',
+        2.5: 'Ok',
+        3: 'Ok+',
+        3.5: 'Good',
+        4: 'Good+',
+        4.5: 'Excellent',
+        5: 'Excellent+',
     };
+
+    const value = place?.avg_food_quality;
+
+    const handleClick = (data) => {
+        // Navigate to the selected item page with the place data
+        navigate(`/selected-item/${data.restaurant_id}`, { state: data });
+    };
+
+
+    useEffect(() => {
+        const fetchReviewImages = async () => {
+            try {
+                const response = await axios.get('http://localhost:3000/reviews');
+                const reviews = response.data;
+                console.log(reviews);
+
+                const images = {};
+                reviews.forEach(review => {
+                    if (review.restaurant_id && review.image_url) {
+                        images[review.restaurant_id] = review.image_url;
+                    }
+                });
+
+                setReviewImages(images);
+            } catch (error) {
+                console.error('Error fetching review images:', error);
+            }
+        };
+        fetchReviewImages();
+    }, []);
+
 
     return (
         <div>
             <div className='flex shadow-2xl flex-col w-[100%] h-[100%]  justify-center relative group cursor-pointer bg-white rounded-2xl text-black' onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)} onClick={() => handleClick(place)}>
-                <div className=" overflow-hidden relative w-[100%] h-[250px]  rounded-lg shadow-md">
-                    {
-                        foodImage.map((item, index) => <img key={index} style={{ transform: `translateX(${(index - currentImage) * 100}%)` }} className='transition-all duration-300 ease-in-out absolute top-0 left-0 w-[100vw] h-[100%] cursor-pointer object-cover' src={item} alt="" />)
-                    }
+                <div className="overflow-hidden relative w-[100%] h-[200px] rounded-lg shadow-md">
+                    {reviewImages[place?.restaurant_id] ? (
+                        <img
+                            src={reviewImages[place.restaurant_id]}
+                            alt="Restaurant Review"
+                            className="w-full h-48 object-cover rounded-md"
+                            onError={(e) => (e.target.src = '/fallback.jpg')}
+                        />
+                    ) : (
+                        <Lottie
+                            animationData={resturent_animation}
+                            loop
+                            className="w-full h-48 object-contain"
+                        />
+                    )}
                 </div>
                 <div className='p-2'>
                     <p className="text-lg font-bold capitalize m-0">{place?.name}</p>

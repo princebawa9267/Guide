@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Divider, Fab, FormControl, Icon, IconButton, Rating, ToggleButton, toggleButtonClasses, ToggleButtonGroup, toggleButtonGroupClasses } from '@mui/material'
+import { Box, Divider, Fab, FormControl, Icon, IconButton, Rating, ToggleButton, toggleButtonClasses, ToggleButtonGroup, toggleButtonGroupClasses } from '@mui/material';
 import { FilterAlt, Star, Close } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 

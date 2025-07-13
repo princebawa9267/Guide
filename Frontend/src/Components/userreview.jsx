@@ -11,6 +11,7 @@ const Userreview = () => {
   const {auth} = useAppSelector(store=> store);
   const user_id = auth?.user?.uid;
 
+
   useEffect(() => {
 
     const fetchreviews=async()=>{
@@ -19,7 +20,8 @@ const Userreview = () => {
     try{
     const response=await axios.get(`http://localhost:3000/reviews/${user_id}/reviews`)
     console.log(auth);
-    setReviews(response.data);
+    const sortedreviws = response.data.sort((a, b) => b.upvotes - a.upvotes )
+    setReviews(sortedreviws);
     setloading(false);
     }catch(err){
       console.log("error in fetching reviews"+err);

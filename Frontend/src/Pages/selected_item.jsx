@@ -28,7 +28,8 @@ const Selected_item = () => {
       )
         .then((res) => res.json())
         .then((data) => {
-          setreviews(data)
+          const sortedreviws= data.sort((a, b) => b.upvotes - a.upvotes);
+          setreviews(sortedreviws)
           //fetching iimgs urls from review
           const imageearr = data.flatMap(review => review.images || []);
           setimages(imageearr);

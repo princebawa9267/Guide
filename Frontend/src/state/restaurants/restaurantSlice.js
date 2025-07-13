@@ -11,7 +11,8 @@ export const fetchRestaurant = createAsyncThunk(
                     locality: query.locality?.trim().toLowerCase(),
                     min_cleanliness: query.min_cleanliness,
                     price_range: query.price_range,
-                    city: query.city?.trim().toLowerCase()
+                    city: query.city?.trim().toLowerCase(),
+                    restaurant_id: query.restaurant_id
                 }
             });
             console.log(response.data);

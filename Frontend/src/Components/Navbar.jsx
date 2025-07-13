@@ -1,5 +1,5 @@
 import React from 'react'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { FaUser } from "react-icons/fa";
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../state/store';
@@ -9,6 +9,8 @@ import { logoutUser } from '../state/auth/authSlice';
 const Navbar = () => {
 
     const [drawerToggle, setDrawerToggle] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null)
 
     // User image URL state
     // This will hold the converted Blob URL for the user image
@@ -71,6 +73,21 @@ const Navbar = () => {
             });
         }
     }, [auth?.user?.photoURL]);
+
+    // close dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+
+    }, [])
 
     return (
         <div className='flex justify-center'>
@@ -148,11 +165,32 @@ const Navbar = () => {
                                     }`
                                 }>Contribute</NavLink>
                             </li>
-                            <li>
-                                <NavLink to="/List_Your_Shop" className={({ isActive }) =>
-                                    `block py-2 px-3 cursor-pointer rounded-sm ${isActive ? 'text-[#8a3ab9] font-semibold' : 'text-[#766f6f]'
-                                    }`
-                                }>List Your Shop</NavLink>
+                            <li className='relative' ref={dropdownRef}>
+                                <button
+                                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                                    className="block py-2 px-3 cursor-pointer rounded-sm text-[#766f6f] hover:text-[#8a3ab9] font-medium"
+                                >
+                                    List Your Shop ▾
+                                </button>
+
+                                {dropdownOpen && (
+                                    <div className="absolute top-15 left-0 bg-white  shadow-lg rounded-md w-48 z-50">
+                                        <NavLink
+                                            to="/List_Your_Shop/register"
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100"
+                                            onClick={() => setDropdownOpen(false)}
+                                        >
+                                            Register Shop
+                                        </NavLink>
+                                        <NavLink
+                                            to="/List_Your_Shop/dashbord"
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100"
+                                            onClick={() => setDropdownOpen(false)}
+                                        >
+                                            My Dashboard
+                                        </NavLink>
+                                    </div>
+                                )}
                             </li>
                             <li>
                                 <NavLink to="#" className={({ isActive }) =>
