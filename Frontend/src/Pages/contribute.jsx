@@ -16,6 +16,7 @@ import 'react-time-picker/dist/TimePicker.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSearchParams } from 'react-router-dom';
+import { useDropzone } from 'react-dropzone';
 
 const Contribute = () => {
 
@@ -55,8 +56,8 @@ const [markedPosition, setMarkedPosition] = useState(() => {
     const payload = {
       name: lowerCasedValues.Name,
       locality: lowerCasedValues.Location,
-      user_id: auth.user.uid,
-      city:lowerCasedValues.City,
+      user_id: auth?.user?.uid || '',
+      city: lowerCasedValues.City,
       review_text: lowerCasedValues.Your_Experience,
       price_range: lowerCasedValues.Price_Level,
       food_quality: lowerCasedValues.Food_Quality,
@@ -92,21 +93,21 @@ const [markedPosition, setMarkedPosition] = useState(() => {
         console.log('API Response:', result);
         resetForm();
       } else {
-         toast.update("submitToast", {
-        render: result.error || "Failed to submit",
+        toast.update("submitToast", {
+          render: result.error || "Failed to submit",
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      }
+
+    } catch (error) {
+      toast.update("submitToast", {
+        render: "Error occurred. Please try again.",
         type: "error",
         isLoading: false,
         autoClose: 3000,
       });
-      }
-
-    } catch (error) {
-       toast.update("submitToast", {
-      render: "Error occurred. Please try again.",
-      type: "error",
-      isLoading: false,
-      autoClose: 3000,
-    });
     } finally {
       setSubmitting(false);
     }
@@ -136,9 +137,9 @@ const [markedPosition, setMarkedPosition] = useState(() => {
         </div>
       </div>
 
-      <div className='main flex flex-col items-center justify-center gap-15 mt-5'>
+      <div className='main flex flex-col items-center justify-center '>
         {/* Intro Section */}
-        <div className="w-[90vw] max-w-7xl appear-apply h-[60vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10 flex flex-col md:flex-row justify-center items-center overflow-hidden p-6">
+        <div className="w-[90vw] max-w-7xl appear-apply h-[60vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-15 flex flex-col md:flex-row justify-center items-center overflow-hidden p-6">
           <div className="w-full md:w-1/2 h-full flex flex-col justify-around px-4 py-4 space-y-3">
             <div className="h-1 w-full bg-[#8a3ab9] rounded-full"></div>
             <p className="text-sm md:text-base text-[#29264A] leading-relaxed font-medium overflow-y-auto">
@@ -151,6 +152,8 @@ const [markedPosition, setMarkedPosition] = useState(() => {
             <img className="h-[90%] object-contain transform hover:scale-105 transition duration-500" src={social_media} alt="Traveler" />
           </div>
         </div>
+
+         <div className='flex justify-center items-center  nunito text-white bg-[#8a3ab9] w-[45vw] mt-15  rounded-t-3xl '>Here add your Experince</div>
 
         {/* Form */}
         <Formik
@@ -172,15 +175,22 @@ const [markedPosition, setMarkedPosition] = useState(() => {
             if (!values.Cleanliness) errors.Cleanliness = 'Cleanliness is required';
             if (!values.Service) errors.Service = 'Service is required';
             if (!values.Popular_Dish) errors.Popular_Dish = 'Popular Dish is required';
+            if (Object.keys(errors).length > 0) {
+              toast.error("Please fill all the required fields", {
+                autoClose: 3000,
+                toastId: "validationError"
+              });
+            }
+
             return errors;
           }}
           onSubmit={handleSubmit} // Changed from original to use handleSubmit
         >
           {({ isSubmitting, setFieldValue }) => (
-            <Form className="w-[90vw] max-w-7xl mb-10 bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-rows-6 gap-6 text-xl p-8">
+            <Form className="w-[90vw] max-w-7xl mb-10 bg-gradient from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-auto-rows gap-6 text-xl p-8">
 
               {/* Name */}
-              <label className="flex flex-col justify-center gap-2 w-full m-3 p-4 h-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">
+              <label className="flex flex-col justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">
                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Name :</span>
                 <Field type="text" name="Name" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter Location name" />
                 <div className='h-1 rounded-full w-full bg-[#8a3ab9]'></div>
@@ -217,7 +227,7 @@ const [markedPosition, setMarkedPosition] = useState(() => {
               </label>
 
               {/* Popular Dish */}
-              <label className='flex flex-col justify-center gap-2 w-full m-3 p-4 h-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300'>
+              <label className='flex flex-col justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300'>
                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Popular Dish :</span>
                 <Field type="text" name="Popular_Dish" className="w-full border-none focus:ring-[#8a3ab9] text-[#29264A] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter dish name" />
                 <div className='h-1 w-full rounded-full bg-[#8a3ab9]'></div>
@@ -259,40 +269,59 @@ const [markedPosition, setMarkedPosition] = useState(() => {
               {/* Images */}
               <label className='w-full m-3 p-4 cursor-pointer rounded-3xl col-span-2 text-xl shadow-xl bg-white hover:shadow-2xl transition-shadow duration-300'>
                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Images :</span>
+
                 <Field name="Images">
                   {({ form }) => {
                     const images = form.values.Images || [];
 
-                    const handleImageUpload = async (event) => {
-                      const file = event.currentTarget.files[0];
-
-                      if (!file || images.length >= 3) {
+                    const onDrop = async (acceptedFiles) => {
+                      if (images.length + acceptedFiles.length > 3) {
                         alert("You can upload a maximum of 3 images.");
                         return;
                       }
 
-                      const data = new FormData();
-                      data.append("file", file);
-                      data.append("upload_preset", "guide images");
+                      for (const file of acceptedFiles) {
+                        const data = new FormData();
+                        data.append("file", file);
+                        data.append("upload_preset", "guide images");
 
-                      const res = await fetch("https://api.cloudinary.com/v1_1/dbvy9i1sq/image/upload", {
-                        method: "POST",
-                        body: data,
-                      });
+                        const res = await fetch("https://api.cloudinary.com/v1_1/dbvy9i1sq/image/upload", {
+                          method: "POST",
+                          body: data,
+                        });
 
-                      const cloudinaryData = await res.json();
-                      const newImages = [...images, cloudinaryData.secure_url];
-                      form.setFieldValue("Images", newImages);
+                        const cloudinaryData = await res.json();
+                        const newImages = [...form.values.Images, cloudinaryData.secure_url];
+                        form.setFieldValue("Images", newImages);
+                      }
                     };
 
+                    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+                      onDrop,
+                      accept: {
+                        'image/*': [],
+                      },
+                      multiple: true,
+                      maxFiles: 3 - images.length,
+                    });
+
                     return (
-                      <div className="flex flex-col gap-2">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          className=" p-2 rounded w-full focus:outline-none"
-                        />
+                      <div className="flex flex-col gap-4">
+                        {/* Dropzone area */}
+                        <div
+                          {...getRootProps()}
+                          className={`w-full p-6 border-2 border-dashed rounded-lg cursor-pointer text-center ${isDragActive ? 'border-purple-600 bg-purple-50' : 'border-gray-400'
+                            }`}
+                        >
+                          <input {...getInputProps()} />
+                          {isDragActive ? (
+                            <p className="text-purple-600">Drop the files here ...</p>
+                          ) : (
+                            <p className="text-gray-600">
+                              Drag and drop images here, or click to select files (max 3)
+                            </p>
+                          )}
+                        </div>
 
                         {/* Display Uploaded Images */}
                         <div className="flex gap-3 flex-wrap">
@@ -306,8 +335,8 @@ const [markedPosition, setMarkedPosition] = useState(() => {
                           ))}
                         </div>
 
+                        <ErrorMessage name="Images" component="div" className="text-red-500 text-sm" />
 
-                        {/* Optional Remove Button */}
                         <button
                           type="button"
                           onClick={() => form.setFieldValue("Images", [])}
@@ -319,6 +348,7 @@ const [markedPosition, setMarkedPosition] = useState(() => {
                     );
                   }}
                 </Field>
+
 
               </label>
 
@@ -332,7 +362,7 @@ const [markedPosition, setMarkedPosition] = useState(() => {
 
 
               {/* Poem */}
-              <div className='bg-white w-full text-center max-w-3xl min-h-[150px] tracking-tight leading-snug m-3 p-1 text-lg flex flex-col justify-center items-center gap-1 shadow-xl hover:shadow-2xl transition-shadow duration-300 h-[25vh]  rounded-3xl '>
+              <div className='bg-white w-full text-center max-w-3xl min-h-[150px] tracking-tight leading-snug m-3 p-1 text-lg flex flex-col justify-center items-center gap-1 shadow-xl hover:shadow-2xl transition-shadow duration-300 h-min-[25vh]  rounded-3xl '>
 
                 <span>" Drop a tip, a tale, a place you found,</span>
                 <span>Help the next explorer look around.</span>
@@ -342,7 +372,7 @@ const [markedPosition, setMarkedPosition] = useState(() => {
 
 
               {/* open hours */}
-              <label className='flex flex-col justify-center gap-2 w-full m-3 p-4 h-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300'>
+              <label className='flex flex-col justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300'>
                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Open Hours :</span>
                 <div className="flex items-center gap-4 space-y-4 w-full max-w-sm">
                   <div>

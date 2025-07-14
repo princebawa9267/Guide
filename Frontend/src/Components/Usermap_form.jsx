@@ -2,18 +2,20 @@ import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import userIconImg from '/src/assets/icons8-marker-50.png';
+import selectedIconImg from '/src/assets/icons8-marker-50 (1).png';
 
 
 
 // Custom user location icon
 const userIcon = L.icon({
-    iconUrl: './src/assets/icons8-marker-50.png', // Make sure this file exists
+    iconUrl: userIconImg, // Make sure this file exists
     iconSize: [30, 30],
 });
 
 // Custom selected marker icon
 const selectedIcon = L.icon({
-    iconUrl: './src/assets/icons8-marker-50 (1).png', // Make sure this file exists
+    iconUrl: selectedIconImg, // Make sure this file exists
     iconSize: [30, 30],
 });
 
