@@ -33,8 +33,16 @@ const Router = () => {
         <Route path='/user-verification' element={<UserVerification/>}></Route>
         <Route path='/searched-location' element={<LocationSearchPage/>}></Route>
         <Route path="/selected-item/:restaurantId" element={<Selected_item />} />
-        <Route path="/List_Your_Shop/register" element={<Shop_register/>}/>
-        <Route path="/List_Your_Shop/dashbord" element={<ShopDashboard/>}/>
+        <Route path="/listyourshop/register" element={
+          <PrivateRoute>
+          <Shop_register/>
+          </PrivateRoute>
+          }/>
+        <Route path="/listyourshop/dashbord" element={
+          <PrivateRoute>
+          <ShopDashboard/>
+          </PrivateRoute>
+          }/>
       </Routes>
     </div>
   )

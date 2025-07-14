@@ -85,13 +85,15 @@ const [markedPosition, setMarkedPosition] = useState(() => {
 
       if (response.ok) {
         toast.update("submitToast", {
-          render: "Submitted successfully!",
+          render: "Submitted successfully!Thanks for your contribution.",
           type: "success",
           isLoading: false,
           autoClose: 3000,
         });
         console.log('API Response:', result);
         resetForm();
+        setMarkedPosition(null);
+        setOpeningTime('');
       } else {
         toast.update("submitToast", {
           render: result.error || "Failed to submit",
@@ -184,10 +186,11 @@ const [markedPosition, setMarkedPosition] = useState(() => {
 
             return errors;
           }}
+
           onSubmit={handleSubmit} // Changed from original to use handleSubmit
         >
           {({ isSubmitting, setFieldValue }) => (
-            <Form className="w-[90vw] max-w-7xl mb-10 bg-gradient from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-auto-rows gap-6 text-xl p-8">
+            <Form className="w-[90vw] max-w-7xl mb-10 bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-auto-rows gap-6 text-xl p-8">
 
               {/* Name */}
               <label className="flex flex-col justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">

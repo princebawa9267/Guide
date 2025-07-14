@@ -176,14 +176,14 @@ const Navbar = () => {
                                 {dropdownOpen && (
                                     <div className="absolute top-15 left-0 bg-white  shadow-lg rounded-md w-48 z-50">
                                         <NavLink
-                                            to="/List_Your_Shop/register"
+                                            to="/listyourshop/register"
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100"
                                             onClick={() => setDropdownOpen(false)}
                                         >
                                             Register Shop
                                         </NavLink>
                                         <NavLink
-                                            to="/List_Your_Shop/dashbord"
+                                            to="/listyourshop/dashbord"
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100"
                                             onClick={() => setDropdownOpen(false)}
                                         >

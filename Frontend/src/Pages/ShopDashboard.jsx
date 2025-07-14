@@ -13,8 +13,14 @@ import { PieChart } from '@mui/x-charts/PieChart';
 import { QRCodeSVG } from 'qrcode.react';
 
 import html2canvas from 'html2canvas';
+import { useNavigate } from 'react-router-dom';
 
 const ShopDashboard = () => {
+    
+    const navigate = useNavigate();
+    const handleclick =()=>{
+       navigate("/listyourshop/register")
+    }
 
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
@@ -200,7 +206,7 @@ const ShopDashboard = () => {
                                 Your Shops
                             </h1>
                         </div>
-                        <Button variant='outlined' className="ml-auto"><Add />New Shop</Button>
+                        <Button variant='outlined' onClick={handleclick} className="ml-auto"><Add />New Shop</Button>
                     </div>
 
 
@@ -260,6 +266,9 @@ const ShopDashboard = () => {
                         </Table>
                     </TableContainer>
                 </div>
+                <div className='mt-6 w-full'>
+                <Footer />
+            </div>
             </div>
         </>
     )

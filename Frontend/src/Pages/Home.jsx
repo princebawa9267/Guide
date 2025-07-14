@@ -76,39 +76,59 @@ const Home = () => {
           <Searchbar />
         </div>
 
-        {/* features */}
-        <div className="p-6 flex justify-center shadow-2xl bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full justify-items-center">
+        {/* Features Section */}
+        <div className="mt-12 mb-16 px-4">
+          {/* 🔮 Heading */}
+          <div className="text-center mb-2">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#8a3ab9] to-[#c499f3] animate-pulse">
+              Experience More Magic ✨
+            </h2>
+          </div>
 
-            {/* Feature 1: Search & Guided Help */}
-            <div className="w-[90%] sm:w-[40vw] lg:w-[25vw] h-[65vh] p-6 rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:ring-4 hover:ring-white flex flex-col justify-between items-center text-white text-center bg-gradient-to-br from-[#8a3ab9] to-[#b46ae4]" onClick={srcolltosearch}>
-              <img className="h-[60%] object-contain transition duration-500" src={Searching_img} alt="Search" />
-              <div className="mt-4 text-lg font-semibold">Smart Place Search</div>
-              <p className="text-sm opacity-90 px-2">
-                Search any place, and we become your tour guide by showing local details, suggestions, and more.
-              </p>
+          {/* Feature Cards */}
+          <div className="p-6 flex justify-center shadow-2xl bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full justify-items-center">
+
+              {/* Feature 1: Smart Place Search */}
+              <div
+                className="w-[90%] sm:w-[40vw] lg:w-[25vw] h-[65vh] p-6 rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:ring-4 hover:ring-white flex flex-col justify-between items-center text-white text-center bg-gradient-to-br from-[#8a3ab9] to-[#b46ae4]"
+                onClick={srcolltosearch}
+              >
+                <img className="h-[60%] object-contain transition duration-500" src={Searching_img} alt="Search" />
+                <div className="mt-4 text-lg font-semibold">Smart Place Search</div>
+                <p className="text-sm opacity-90 px-2">
+                  Search any place, and we become your tour guide with local gems, hotspots, and must-trys.
+                </p>
+              </div>
+
+              {/* Feature 2: Live Location Tracking */}
+              <div
+                className="w-[90%] sm:w-[40vw] lg:w-[25vw] h-[65vh] p-6 rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:ring-4 hover:ring-white flex flex-col justify-between items-center text-white text-center bg-gradient-to-br from-[#f2435a] to-[#ff7b92]"
+                onClick={scrolltomap}
+              >
+                <img className="h-[60%] object-contain transition duration-500" src={van_img} alt="Live Location" />
+                <div className="mt-4 text-lg font-semibold">Location on Map</div>
+                <p className="text-sm opacity-90 px-2">
+                  Track your location live and explore nearby attractions without ever getting lost again.
+                </p>
+              </div>
+
+              {/* Feature 3: Share Your Story */}
+              <div
+                className="w-[90%] sm:w-[40vw] lg:w-[25vw] h-[65vh] p-6 rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:ring-4 hover:ring-white flex flex-col justify-between items-center text-white text-center bg-gradient-to-br from-[#8a3ab9] to-[#b46ae4]"
+                onClick={contribute_navigate}
+              >
+                <img className="h-[60%] object-contain transition duration-500" src={couple_img} alt="Contribute" />
+                <div className="mt-4 text-lg font-semibold">Contribute Your Story</div>
+                <p className="text-sm opacity-90 px-2">
+                  Share your journey, your finds, and your food tales — and become a guide for someone else.
+                </p>
+              </div>
+
             </div>
-
-            {/* Feature 2: Live Location Tracking */}
-            <div className="w-[90%] sm:w-[40vw] lg:w-[25vw] h-[65vh] p-6 rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:ring-4 hover:ring-white flex flex-col justify-between items-center text-white text-center bg-gradient-to-br from-[#f2435a] to-[#ff7b92]" onClick={scrolltomap}>
-              <img className="h-[60%] object-contain transition duration-500" src={van_img} alt="Live Location" />
-              <div className="mt-4 text-lg font-semibold">Location on Map</div>
-              <p className="text-sm opacity-90 px-2">
-                We track your location and show it on the map in real-time so you always know where you’re heading.
-              </p>
-            </div>
-
-            {/* Feature 3: Share Your Experience */}
-            <div className="w-[90%] sm:w-[40vw] lg:w-[25vw] h-[65vh] p-6 rounded-2xl shadow-2xl cursor-pointer transform transition-all duration-300 hover:scale-105 hover:ring-4 hover:ring-white flex flex-col justify-between items-center text-white text-center bg-gradient-to-br from-[#8a3ab9] to-[#b46ae4]" onClick={contribute_navigate}>
-              <img className="h-[60%] object-contain transition duration-500" src={couple_img} alt="Contribute" />
-              <div className="mt-4 text-lg font-semibold">Contribute Your Story</div>
-              <p className="text-sm opacity-90 px-2">
-                Add your travel experience using a simple form — help others, and they’ll help you in return.
-              </p>
-            </div>
-
           </div>
         </div>
+
 
 
 

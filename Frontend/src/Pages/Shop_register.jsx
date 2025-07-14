@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Usermap_form from '../Components/Usermap_form';
 import { useDropzone } from 'react-dropzone';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -23,11 +24,12 @@ const Shop_register = () => {
     const [markedposition, setmarkedposition] = useState(null);
     const [openingTime, setOpeningTime] = useState('');
     const [closingTime, setClosingTime] = useState('');
-    const [openhours, setopenhours] = useState('')
+    const [openhours, setopenhours] = useState('');
+    const navigate = useNavigate();
 
     const auth = useAppSelector(store => store);
 
-    const handlesubmit = async (values, { setsubmitting, resetform }) => {
+   const handlesubmit = async (values, { setSubmitting, resetForm }) => {    
         console.log("submitting values");
         toast.loading("Submitting your shop details, please wait...", { toastId: "submittoast" });
 
@@ -46,7 +48,7 @@ const Shop_register = () => {
             phone_number: lowercasevalues.phone_number,
             email_address: lowercasevalues.email_address,
             link: lowercasevalues.link,
-            locality: lowercasevalues.loaclity,
+            locality: lowercasevalues.locality,
             city: lowercasevalues.city,
             GST_number: lowercasevalues.GST_number,
             longitude: lowercasevalues.longitude,
@@ -59,16 +61,17 @@ const Shop_register = () => {
         try {
             const response = await axios.post('/', payload);
             console.log(response.data);
-            toast.update("submittoast", { render: "Shop registered successfully!", type: "success", isLoading: false, autoClose: 3000 });
-            resetform();
+            toast.update("submittoast", { render: "Shop registered successfully!Thanks", type: "success", isLoading: false, autoClose: 3000 });
+            resetForm();
+            setmarkedposition(null);
+            setOpeningTime('');
+            navigate("/listyourshop/dashbord");
         } catch (error) {
             console.error("Error submitting shop details:", error);
             toast.update("submittoast", { render: "Failed to register shop. Please try again.", type: "error", isLoading: false, autoClose: 3000 });
         } finally {
-            setsubmitting(false);
+            setSubmitting(false);
         }
-
-
     };
 
     return (
@@ -127,7 +130,7 @@ const Shop_register = () => {
                     initialValues={{
                         name_of_restaurant: "", locality: "", city: "", latitude: '', longitude: '', owner_name: "", phone_number: "",
                         email_address: "", link: "", GST_number: "",
-                        open_hours: openhours, images: []
+                        open_hours: "", images: []
                     }}
 
                     validate={values => {
@@ -149,18 +152,12 @@ const Shop_register = () => {
                         } else if (!/^\d{10}$/.test(values.phone_number)) {
                             errors.phone_number = 'Invalid phone number';
                         }
-                        if (!values.open_Hours) {
-                            errors.open_Hours = 'Required';
+                        if (!values.open_hours) {
+                            errors.open_hours = 'Required';
                         }
                         if (!values.latitude || !values.longitude) {
                             errors.latitude = 'Please select a location on the map';
                             errors.longitude = 'Please select a location on the map';
-                        }
-                        if (Object.keys(errors).length > 0) {
-                            toast.error("Please fill all the required fields", {
-                                autoClose: 3000,
-                                toastId: "validationError"
-                            });
                         }
 
                         return errors;
@@ -364,7 +361,7 @@ const Shop_register = () => {
                                         onClick={() => {
                                             const combined = `${openingTime} - ${closingTime}`;
                                             setopenhours(combined);
-                                            setFieldValue('open_Hours', combined);
+                                            setFieldValue('open_hours', combined);
                                             toast.success("open hours are set successfully!");
 
                                         }}

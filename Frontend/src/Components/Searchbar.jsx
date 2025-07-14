@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { CiSearch } from "react-icons/ci";
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../src/register.js';
+import Lottie from 'lottie-react';
+import down_arrow from "../assets/Arrow down.json"
 
 const Searchbar = () => {
   const [locality, setLocality] = useState('');
@@ -88,8 +90,36 @@ const Searchbar = () => {
 
   return (
     <>
+      {/* Info Banner */}
+      <div className="w-full text-center mt-8 mb-4 px-4">
+        <h1 className="text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-[#8a3ab9] via-[#c77dff] to-[#e0aaff] text-transparent bg-clip-text animate-pulse">
+          Discover Hidden Gems Across Every City 🌆
+        </h1>
+
+        <p className="mt-3 text-lg sm:text-xl text-gray-800 font-medium max-w-3xl mx-auto leading-relaxed">
+          Search for <span className="text-[#8a3ab9] font-semibold">any city</span> or a
+          <span className="text-[#9b5de5] font-semibold"> special place</span> — from popular streets to hidden corners.
+          <br className="hidden sm:block" />
+          We'll show you <span className="italic font-bold text-[#7b2cbf]">flavors, vibes, and stories</span> waiting to be explored ✨
+        </p>
+
+        <div className="mt-4 ">
+          {/* 👉 Replace this with Lottie or pointing arrow animation */}
+          <div className="mx-auto w-10 h-10">
+            <Lottie
+              animationData={down_arrow}
+              loop={true}
+              className="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+      </div>
+
+
+
+      {/* Search Form */}
       <form onSubmit={handleSearch} className="w-screen flex flex-col items-center gap-4 relative">
-        {/* Locality input */}
+        {/* Locality Input */}
         <div className="relative w-1/2">
           <input
             type="text"
@@ -114,7 +144,7 @@ const Searchbar = () => {
           )}
         </div>
 
-        {/* City input */}
+        {/* City Input */}
         <div className="relative w-1/2">
           <input
             type="text"
@@ -140,6 +170,7 @@ const Searchbar = () => {
         </div>
       </form>
 
+      {/* Search Button */}
       <div className="w-screen flex justify-center mt-3">
         <button
           type="submit"
