@@ -6,14 +6,12 @@ import Signin from '../Pages/AuthPages/Signin'
 import Signup from '../Pages/AuthPages/Signup'
 import UserVerification from '../Pages/AuthPages/UserVerification'
 import Contribute from '../Pages/contribute'
-import Locations from '../Pages/LocationSearch/Locations'
 import LocationSearchPage from '../Pages/LocationSearch/LocationSearchPage'
 import Selected_item from '../Pages/selected_item'
 import Shop_register from '../Pages/Shop_register'
-import Shop_dashboard from '../Pages/Shop_dashboard'
+import ShopDashboard from '../Pages/ShopDashboard'
 import PrivateRoute from './PrivateRoute'
 import { useAppSelector } from '../state/store'
-import ItemLister from '../Pages/Items/ItemLister'
 
 const Router = () => {
 
@@ -36,7 +34,7 @@ const Router = () => {
         <Route path='/searched-location' element={<LocationSearchPage/>}></Route>
         <Route path="/selected-item/:restaurantId" element={<Selected_item />} />
         <Route path="/List_Your_Shop/register" element={<Shop_register/>}/>
-        <Route path="/List_Your_Shop/dashbord" element={<Shop_dashboard/>}/>
+        <Route path="/List_Your_Shop/dashbord" element={<ShopDashboard/>}/>
       </Routes>
     </div>
   )

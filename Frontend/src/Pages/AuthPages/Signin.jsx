@@ -76,9 +76,6 @@ const Signin = () => {
       <AuthFormat type={"Sign In"} />
 
       <Grid container spacing={2} className="justify-center md:justify-around items-center">
-        
-        
-
         {/* Left side - Image */}
         <Grid item xs={false} md={6} lg={4}>
           <div className="hidden md:flex justify-center items-center h-full">

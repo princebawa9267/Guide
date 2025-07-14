@@ -15,10 +15,19 @@ import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSearchParams } from 'react-router-dom';
 
 const Contribute = () => {
 
-  const [markedposition, setmarkedposition] = useState(null);
+  const [searchParams] = useSearchParams();
+
+const [markedPosition, setMarkedPosition] = useState(() => {
+  const longitude = parseFloat(searchParams.get('longitude')) ;
+  const latitude = parseFloat(searchParams.get('latitude'));
+
+  return (longitude && latitude) ? [longitude, latitude] : null;
+});
+  
   const [openingTime, setOpeningTime] = useState('');
   const [closingTime, setClosingTime] = useState('');
   const [openhours, setopenhours] = useState('')
@@ -146,7 +155,7 @@ const Contribute = () => {
         {/* Form */}
         <Formik
           initialValues={{
-            Name: "", Location: "", City: "", latitude: '', longitude: '', Popular_Dish: "", Price_Level: "",
+            Name: searchParams.get('name') || '', Location: searchParams.get('location')|| "", City: searchParams.get('city')|| "", latitude: searchParams.get('latitude')|| "", longitude: searchParams.get('longitude')|| "", Popular_Dish: "", Price_Level: "",
             Food_Quality: "", Cleanliness: "", Service: "",
             Open_Hours: openhours, Images: [], Your_Experience: ""
           }}
@@ -196,14 +205,14 @@ const Contribute = () => {
 
                 {/* maps */}
                 <div className='w-full h-[40vh] flex justify-center items-center mt-5'>
-                  {markedposition && (
+                  {markedPosition && (
                     <p className="text-sm text-gray-600 text-center">
-                      📍 Selected Location: {markedposition[0].toFixed(4)}, {markedposition[1].toFixed(4)}
+                      📍 Selected Location: {markedPosition[0].toFixed(4)}, {markedPosition[1].toFixed(4)}
                     </p>
                   )}
-                  <Field type="hidden" name="latitude" value={markedposition?.[0] ? parseFloat(markedposition[0].toFixed(4)) : ''} />
-                  <Field type="hidden" name="longitude" value={markedposition?.[1] ? parseFloat(markedposition[1].toFixed(4)) : ''} />
-                  <Usermap_form onLocationSelect={setmarkedposition} setFieldValue={setFieldValue} />
+                  <Field type="hidden" name="latitude" value={markedPosition?.[0] ? parseFloat(markedPosition[0].toFixed(4)) : ''} />
+                  <Field type="hidden" name="longitude" value={markedPosition?.[1] ? parseFloat(markedPosition[1].toFixed(4)) : ''} />
+                  <Usermap_form onLocationSelect={setMarkedPosition} setFieldValue={setFieldValue} />
                 </div>
               </label>
 
