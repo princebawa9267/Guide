@@ -4,31 +4,34 @@ import { generateRestaurantId } from '../utils/idGenerators.js';
 
 const router = express.Router();
 
-// Add new restaurant (optional)
-router.post('/', async (req, res) => {
-  const { name, locality, ...otherFields } = req.body;
+// Add new restaurant by the owner (optional) pending
 
-  if (!name || !locality) {
-    return res.status(400).json({ error: 'name and locality are required' });
-  }
-
-  const restaurant_id = generateRestaurantId(name, locality);
-  const docRef = db.collection('restaurants').doc(restaurant_id);
-
-  const docSnap = await docRef.get();
-  if (docSnap.exists) {
-    return res.status(409).json({ error: 'Restaurant already exists', restaurant_id });
-  }
-
-  await docRef.set({
-    restaurant_id,
-    name,
+router.post("/",async(res,req)=>{
+  const{
+    name_of_restaurant,
+    owner_name,
+    resturent_id,
+    user_id,
+    phone_number,
+    email_address,
+    link,
+    varification_status,
     locality,
-    ...otherFields
-  });
+    city,
+    GST_number,
+    longitude,
+    latitude,
+    open_hours,
+    images=[],
+  }=req.body;
 
-  res.status(201).json({ message: 'Restaurant added', restaurant_id });
+  if(!name_of_restaurant||!owner_name||!resturent_id||!user_id||!open_hours||!longitude||!locality||!city||!latitude||!images){
+    return res.status(400).json({error:"name_of_restaurant, owner_name, resturent_id, user_id, open_hours, longitude, locality, city, latitude and images are required"});
+  }
+
+  
 });
+   
 
 // Get all restaurants
 router.get('/', async (req, res) => {
