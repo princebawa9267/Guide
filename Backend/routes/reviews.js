@@ -48,6 +48,9 @@ router.post('/', async (req, res) => {
       latitude,
       best_dishes,
       review_count: 1,
+      added_by:user_id,
+      added_from:"user",
+      created_at:Date.now()
     });
   }
 

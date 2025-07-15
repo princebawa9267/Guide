@@ -27,52 +27,72 @@ const Shop_register = () => {
     const [openhours, setopenhours] = useState('');
     const navigate = useNavigate();
 
-    const auth = useAppSelector(store => store);
+    // Getting user id
+    const { auth } = useAppSelector(store => store);
 
-   const handlesubmit = async (values, { setSubmitting, resetForm }) => {    
-        console.log("submitting values");
+    console.log("Auth state in shop register:", auth);
+
+    console.log("auth.user.id is:", auth?.user?.uid);
+   
+    
+
+    const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+        console.log("Submitting shop values...");
         toast.loading("Submitting your shop details, please wait...", { toastId: "submittoast" });
 
-
-        const lowercasevalues = {
+        const lowercaseValues = {
             ...values,
-            name_of_restaurant: values.name_of_restaurant.toLowerCase(),
-            owner_name: values.owner_name.toLowerCase(),
-            locality: values.locality.toLowerCase(),
-            city: values.city.toLowerCase()
+            name_of_restaurant: values.name_of_restaurant.trim().toLowerCase(),
+            owner_name: values.owner_name.trim().toLowerCase(),
+            locality: values.locality.trim().toLowerCase(),
+            city: values.city.trim().toLowerCase(),
         };
 
         const payload = {
-            name_of_restaurant: lowercasevalues.name_of_restaurant,
-            owner_name: lowercasevalues.owner_name,
-            phone_number: lowercasevalues.phone_number,
-            email_address: lowercasevalues.email_address,
-            link: lowercasevalues.link,
-            locality: lowercasevalues.locality,
-            city: lowercasevalues.city,
-            GST_number: lowercasevalues.GST_number,
-            longitude: lowercasevalues.longitude,
-            latitude: lowercasevalues.latitude,
-            open_hours: lowercasevalues.open_hours,
-            user_id: auth?.user?.id || '',
-            images: lowercasevalues.images,
+            name_of_restaurant: lowercaseValues.name_of_restaurant,
+            owner_name: lowercaseValues.owner_name,
+            phone_number: lowercaseValues.phone_number,
+            email_address: lowercaseValues.email_address,
+            link: lowercaseValues.link,
+            locality: lowercaseValues.locality,
+            city: lowercaseValues.city,
+            GST_number: lowercaseValues.GST_number,
+            longitude: lowercaseValues.longitude,
+            latitude: lowercaseValues.latitude,
+            open_hours: lowercaseValues.open_hours,
+            user_id: auth?.user?.uid || "",
+            images: lowercaseValues.images || [], // ✅ fallback for safety
         };
 
         try {
-            const response = await axios.post('/', payload);
-            console.log(response.data);
-            toast.update("submittoast", { render: "Shop registered successfully!Thanks", type: "success", isLoading: false, autoClose: 3000 });
+            const response = await axios.post('http://localhost:3000/restaurants/addedbyowner', payload); // ✅ FIXED: double slashes removed
+            console.log("Shop register response:", response.data);
+
+            toast.update("submittoast", {
+                render: "Shop registered successfully! 🎉",
+                type: "success",
+                isLoading: false,
+                autoClose: 3000,
+            });
+
             resetForm();
-            setmarkedposition(null);
+            setmarkedposition(null); // ✅ okay if you're using a location picker
             setOpeningTime('');
             navigate("/listyourshop/dashbord");
+
         } catch (error) {
             console.error("Error submitting shop details:", error);
-            toast.update("submittoast", { render: "Failed to register shop. Please try again.", type: "error", isLoading: false, autoClose: 3000 });
+            toast.update("submittoast", {
+                render: "Failed to register shop. Please try again.",
+                type: "error",
+                isLoading: false,
+                autoClose: 3000,
+            });
         } finally {
             setSubmitting(false);
         }
     };
+
 
     return (
         <>
@@ -163,9 +183,9 @@ const Shop_register = () => {
                         return errors;
                     }}
 
-                    onSubmit={handlesubmit}
+                    onSubmit={handleSubmit}
                 >
-                    {({ isSubmitting, setFieldValue }) => ( 
+                    {({ isSubmitting, setFieldValue }) => (
                         <Form className='w-[90vw] max-w-7xl mb-10  bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-auto-rows  gap-6 text-xl p-8'>
 
                             {/* reasturent_name */}
