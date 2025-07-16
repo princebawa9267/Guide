@@ -15,6 +15,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Usermap_form from '../Components/Usermap_form';
 import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
+import { doc, getDoc, query, where, onSnapshot } from "firebase/firestore";
 
 
 
@@ -27,14 +29,92 @@ const Shop_register = () => {
     const [openhours, setopenhours] = useState('');
     const navigate = useNavigate();
 
+
+    const [initialValues, setInitialValues] = useState({
+        name_of_restaurant: "",
+        locality: "",
+        city: "",
+        open_hours: "",
+        latitude: "",
+        longitude: "",
+        link: "",
+        GST_number: "",
+        email_address: "",
+        phone_number: "",
+        owner_name: "",
+        images: [],
+    });
+
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const restaurantIdFromURL = queryParams.get("restaurant_id");
+
     // Getting user id
     const { auth } = useAppSelector(store => store);
 
     console.log("Auth state in shop register:", auth);
 
     console.log("auth.user.id is:", auth?.user?.uid);
-   
-    
+
+    useEffect(() => {
+        // ⛔️ Prevent running if there's no ID (i.e. user is adding a new shop)
+        if (!restaurantIdFromURL) {
+            console.log("New shop registration, no restaurant ID.");
+            return;
+        }
+
+        const fetchRestaurantData = async () => {
+            try {
+                const restaurantRef = doc(db, "restaurants", restaurantIdFromURL);
+                const restaurantSnap = await getDoc(restaurantRef);
+
+                if (restaurantSnap.exists()) {
+                    const restaurantData = restaurantSnap.data();
+
+                    const ownerRef = doc(db, "owners", auth?.user?.uid);
+                    const ownerSnap = await getDoc(ownerRef);
+                    const ownerData = ownerSnap.exists() ? ownerSnap.data() : {};
+
+                    setInitialValues({
+                        name_of_restaurant: restaurantData.name || "",
+                        locality: restaurantData.locality || "",
+                        city: restaurantData.city || "",
+                        open_hours: restaurantData.open_hours || "",
+                        latitude: restaurantData.latitude || "",
+                        longitude: restaurantData.longitude || "",
+                        link: restaurantData.link || "",
+                        GST_number: ownerData.GST_number || "",
+                        email_address: ownerData.email_address || "",
+                        phone_number: ownerData.phone_number || "",
+                        owner_name: ownerData.owner_name || "",
+                        images: ownerData.images || [],
+                    });
+
+                    // Set map position
+                    if (restaurantData.latitude && restaurantData.longitude) {
+                        setmarkedposition({
+                            lat: Number(restaurantData.latitude),
+                            lng: Number(restaurantData.longitude),
+                        });
+                    }
+
+                    // Handle open hours time split
+                    if (typeof restaurantData.open_hours === 'string' && restaurantData.open_hours.includes(" - ")) {
+                        const [open, close] = restaurantData.open_hours.split(" - ");
+                        setOpeningTime(open?.trim() || "");
+                        setClosingTime(close?.trim() || "");
+                        setopenhours(restaurantData.open_hours);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching restaurant data:", error);
+            }
+        };
+
+        fetchRestaurantData();
+    }, [restaurantIdFromURL]);
+
+
 
     const handleSubmit = async (values, { setSubmitting, resetForm }) => {
         console.log("Submitting shop values...");
@@ -62,6 +142,7 @@ const Shop_register = () => {
             open_hours: lowercaseValues.open_hours,
             user_id: auth?.user?.uid || "",
             images: lowercaseValues.images || [], // ✅ fallback for safety
+            verification_status: false,
         };
 
         try {
@@ -142,16 +223,13 @@ const Shop_register = () => {
                     </div>
                 </div>
 
-                <div className='flex justify-center items-center nunito text-white bg-[#8a3ab9] w-[45vw] mt-15  rounded-t-3xl '>Here add your shop</div>
+                <div className='flex justify-center items-center nunito appear-apply text-white bg-[#8a3ab9] w-[45vw] mt-15  rounded-t-3xl '>Here add your shop</div>
 
 
                 {/* Form Section */}
                 <Formik
-                    initialValues={{
-                        name_of_restaurant: "", locality: "", city: "", latitude: '', longitude: '', owner_name: "", phone_number: "",
-                        email_address: "", link: "", GST_number: "",
-                        open_hours: "", images: []
-                    }}
+                    enableReinitialize
+                    initialValues={initialValues}
 
                     validate={values => {
                         const errors = {};
@@ -186,7 +264,7 @@ const Shop_register = () => {
                     onSubmit={handleSubmit}
                 >
                     {({ isSubmitting, setFieldValue }) => (
-                        <Form className='w-[90vw] max-w-7xl mb-10  bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-auto-rows  gap-6 text-xl p-8'>
+                        <Form className='w-[90vw] max-w-7xl mb-10 appear-apply  bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-auto-rows  gap-6 text-xl p-8'>
 
                             {/* reasturent_name */}
                             <label className="flex flex-col justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">
@@ -215,21 +293,46 @@ const Shop_register = () => {
 
                                 {/* maps */}
                                 <div className='w-full h-[40vh] flex justify-center items-center mt-5'>
-                                    {markedposition && (
+                                    {Array.isArray(markedposition) && markedposition.length === 2 &&
+                                        typeof markedposition[0] === 'number' &&
+                                        typeof markedposition[1] === 'number' ? (
                                         <p className="text-sm text-gray-600 text-center">
                                             📍 Selected Location: {markedposition[0].toFixed(4)}, {markedposition[1].toFixed(4)}
                                         </p>
+                                    ) : (
+                                        <p className="text-sm text-gray-400 text-center">
+                                            📍 No location selected yet.
+                                        </p>
                                     )}
-                                    <Field type="hidden" name="latitude" value={markedposition?.[0] ? parseFloat(markedposition[0].toFixed(4)) : ''} />
-                                    <Field type="hidden" name="longitude" value={markedposition?.[1] ? parseFloat(markedposition[1].toFixed(4)) : ''} />
-                                    <Usermap_form onLocationSelect={setmarkedposition} setFieldValue={setFieldValue} />
+                                    <Field
+                                        type="hidden"
+                                        name="latitude"
+                                        value={
+                                            Array.isArray(markedposition) && markedposition[0] !== undefined
+                                                ? markedposition[0]
+                                                : ''
+                                        }
+                                    />
+                                    <Field
+                                        type="hidden"
+                                        name="longitude"
+                                        value={
+                                            Array.isArray(markedposition) && markedposition[1] !== undefined
+                                                ? markedposition[1]
+                                                : ''
+                                        }
+                                    />
+                                    <Usermap_form
+                                        onLocationSelect={setmarkedposition}
+                                        setFieldValue={setFieldValue}
+                                    />
                                 </div>
                             </label>
 
                             {/* owner_name */}
                             <label className="flex flex-col justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">
                                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Owner Name :</span>
-                                <Field type="text" name="owner_name" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter restaurent name" />
+                                <Field type="text" name="owner_name" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter owner name" />
                                 <div className='h-1 rounded-full w-full bg-[#8a3ab9]'></div>
                                 <ErrorMessage name="owner_name" component="div" className="text-red-500 text-sm" />
                             </label>
@@ -237,7 +340,7 @@ const Shop_register = () => {
                             {/* phone NUMBER */}
                             <label className="flex flex-col justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">
                                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Phone Number :</span>
-                                <Field type="tel" name="phone_number" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter Location name" />
+                                <Field type="tel" name="phone_number" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter your phone number" />
                                 <div className='h-1 rounded-full w-full bg-[#8a3ab9]'></div>
                                 <ErrorMessage name="phone_number" component="div" className="text-red-500 text-sm" />
                             </label>
@@ -246,21 +349,21 @@ const Shop_register = () => {
                             {/* GST NUMBER */}
                             <label className="flex flex-col justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">
                                 <span className="text-[#8a3ab9] font-semibold tracking-wide">GST Number :</span>
-                                <Field type="text" name="GST_number" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter Location name" />
+                                <Field type="text" name="GST_number" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter GST number" />
                                 <div className='h-1 rounded-full w-full bg-[#8a3ab9]'></div>
                             </label>
 
                             {/* email */}
                             <label className="flex flex-col justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">
                                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Enter Email :</span>
-                                <Field type="email" name="email_address" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter Location name" />
+                                <Field type="email" name="email_address" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter valid eamil id" />
                                 <div className='h-1 rounded-full w-full bg-[#8a3ab9]'></div>
                             </label>
 
                             {/* link */}
                             <label className="flex flex-col justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">
                                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Link :</span>
-                                <Field type="url" name="link" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter Location name" />
+                                <Field type="url" name="link" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter your any web link" />
                                 <div className='h-1 rounded-full w-full bg-[#8a3ab9]'></div>
                             </label>
 

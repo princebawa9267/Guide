@@ -187,7 +187,7 @@ const Navbar = () => {
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-100"
                                             onClick={() => setDropdownOpen(false)}
                                         >
-                                            My Dashboard
+                                            Owner Dashboard
                                         </NavLink>
                                     </div>
                                 )}

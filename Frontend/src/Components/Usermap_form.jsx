@@ -5,24 +5,26 @@ import L from 'leaflet';
 import userIconImg from '/src/assets/icons8-marker-50.png';
 import selectedIconImg from '/src/assets/icons8-marker-50 (1).png';
 
+// Custom icons
+const userIcon = L.icon({ iconUrl: userIconImg, iconSize: [30, 30] });
+const selectedIcon = L.icon({ iconUrl: selectedIconImg, iconSize: [30, 30] });
 
+const Usermap_form = ({ onLocationSelect, setFieldValue, initialLat, initialLng }) => {
+    const [position, setPosition] = useState(null);         // user's live location
+    const [markerPosition, setMarkerPosition] = useState(null); // marker location (editable)
 
-// Custom user location icon
-const userIcon = L.icon({
-    iconUrl: userIconImg, // Make sure this file exists
-    iconSize: [30, 30],
-});
+    // 👇 When form loads with restaurant data (edit mode), set marker
+    useEffect(() => {
+        if (initialLat && initialLng) {
+            const initialCoords = [parseFloat(initialLat), parseFloat(initialLng)];
+            setMarkerPosition(initialCoords);
+            onLocationSelect(initialCoords);
+            setFieldValue("latitude", initialCoords[0]);
+            setFieldValue("longitude", initialCoords[1]);
+        }
+    }, [initialLat, initialLng]);
 
-// Custom selected marker icon
-const selectedIcon = L.icon({
-    iconUrl: selectedIconImg, // Make sure this file exists
-    iconSize: [30, 30],
-});
-
-const Usermap_form = ({ onLocationSelect, setFieldValue }) => {
-    const [position, setPosition] = useState(null);//store user location
-    const [markerPosition, setMarkerPosition] = useState(null);//store selected location
-
+    // 🔁 Track user live position only for centering map
     useEffect(() => {
         let watchId;
 
@@ -43,18 +45,16 @@ const Usermap_form = ({ onLocationSelect, setFieldValue }) => {
         }
 
         return () => {
-            if (watchId) {
-                navigator.geolocation.clearWatch(watchId);
-            }
+            if (watchId) navigator.geolocation.clearWatch(watchId);
         };
     }, []);
 
-    const MapClickHandler = () => { //use to set selected location
+    const MapClickHandler = () => {
         useMapEvents({
             click(e) {
                 const coords = [e.latlng.lat, e.latlng.lng];
                 setMarkerPosition(coords);
-                onLocationSelect(coords); // Send coords to parent
+                onLocationSelect(coords);
                 setFieldValue("latitude", coords[0]);
                 setFieldValue("longitude", coords[1]);
             },
@@ -65,16 +65,20 @@ const Usermap_form = ({ onLocationSelect, setFieldValue }) => {
     return (
         <>
             {position ? (
-                <MapContainer center={position} zoom={13} className=" w-full h-full rounded-b-3xl">
+                <MapContainer
+                    center={markerPosition || position}
+                    zoom={13}
+                    className="w-full h-full rounded-b-3xl"
+                >
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     <MapClickHandler />
 
-                    {/* User's current location */}
+                    {/* User's live location */}
                     <Marker position={position} icon={userIcon}>
                         <Popup>Your Current Location</Popup>
                     </Marker>
 
-                    {/* Dropped marker */}
+                    {/* Marker for selected or pre-filled location */}
                     {markerPosition && (
                         <Marker position={markerPosition} icon={selectedIcon}>
                             <Popup>Selected Location</Popup>
@@ -82,7 +86,7 @@ const Usermap_form = ({ onLocationSelect, setFieldValue }) => {
                     )}
                 </MapContainer>
             ) : (
-                <p className="text-center text-gray-500">Fetching your location...</p>
+                <p className="text-center text-gray-500">📍 Fetching your location...</p>
             )}
         </>
     );
