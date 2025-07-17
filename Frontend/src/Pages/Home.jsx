@@ -72,12 +72,12 @@ const Home = () => {
       <div className='main flex flex-col items-center justify-center gap-15  mt-5'>
 
         {/* Content BELOW the SVG section */}
-        <div className=" p-4" ref={search_ref}>
+        <div className=" p-4 appear-apply" ref={search_ref}>
           <Searchbar />
         </div>
 
         {/* Features Section */}
-        <div className="mt-12 mb-16 px-4">
+        <div className="mt-12 mb-16 appear-apply px-4">
           {/* 🔮 Heading */}
           <div className="text-center mb-2">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#8a3ab9] to-[#c499f3] animate-pulse">

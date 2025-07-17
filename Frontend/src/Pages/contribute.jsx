@@ -155,7 +155,7 @@ const [markedPosition, setMarkedPosition] = useState(() => {
           </div>
         </div>
 
-         <div className='flex justify-center items-center  nunito text-white bg-[#8a3ab9] w-[45vw] mt-15  rounded-t-3xl '>Here add your Experince</div>
+         <div className='flex justify-center items-center appear-apply  nunito text-white bg-[#8a3ab9] w-[45vw] mt-15  rounded-t-3xl '>Here add your Experince</div>
 
         {/* Form */}
         <Formik
@@ -177,12 +177,6 @@ const [markedPosition, setMarkedPosition] = useState(() => {
             if (!values.Cleanliness) errors.Cleanliness = 'Cleanliness is required';
             if (!values.Service) errors.Service = 'Service is required';
             if (!values.Popular_Dish) errors.Popular_Dish = 'Popular Dish is required';
-            if (Object.keys(errors).length > 0) {
-              toast.error("Please fill all the required fields", {
-                autoClose: 3000,
-                toastId: "validationError"
-              });
-            }
 
             return errors;
           }}
@@ -190,7 +184,7 @@ const [markedPosition, setMarkedPosition] = useState(() => {
           onSubmit={handleSubmit} // Changed from original to use handleSubmit
         >
           {({ isSubmitting, setFieldValue }) => (
-            <Form className="w-[90vw] max-w-7xl mb-10 bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-auto-rows gap-6 text-xl p-8">
+            <Form className="w-[90vw] max-w-7xl mb-10 bg-gradient-to-br appear-apply from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-auto-rows gap-6 text-xl p-8">
 
               {/* Name */}
               <label className="flex flex-col justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">

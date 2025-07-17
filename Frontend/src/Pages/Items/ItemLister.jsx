@@ -67,7 +67,7 @@ const ItemLister = () => {
   };
 
   return (
-    <div className='flex relative min-h-[100vh] flex-col'>
+    <div className='flex relative min-h-[100vh] my-20 m  flex-col'>
 
       {/* Debug log */}
       {console.log("Restaurants from API: ", restaurant)}
@@ -87,12 +87,12 @@ const ItemLister = () => {
         {/* <FilterCard/> */}
         <Fab
           aria-label="add"
-          className={`bg-[#8a3ab9] text-white transform transition-transform duration-200 ease-out scale-100 
-        ${openFilter ? 'bg-[#e5dcf8] hover:bg-[#9b4ec3]' : 'hover:bg-[#6a2992]'} 
+          className={`bg-[#8a3ab9] text-[#8a3ab9] transform transition-transform duration-200 ease-out scale-100 
+        ${openFilter ? 'bg-[#9b4ec3] hover:bg-[#9b4ec3]' : 'hover:bg-[#6a2992]'} 
         hover:scale-110`} // Hover effects
           onClick={() => setOpenFilter(!openFilter)}
         >
-          {openFilter ? <Close className='text-white' /> : <FilterAlt className='text-white' />}
+          {openFilter ? <Close className='text-[#9b4ec3] hover:bg-[#9b4ec3] ' /> : <FilterAlt className='text-[#9b4ec3]' />}
         </Fab>
       </div>
 

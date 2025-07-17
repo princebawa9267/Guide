@@ -28,8 +28,8 @@ const Selected_item = () => {
       )
         .then((res) => res.json())
         .then((data) => {
-          const sortedreviws= data.sort((a, b) => b.upvotes - a.upvotes);
-          setreviews(sortedreviws)
+          const sortedReviews = [...data].sort((a, b) => b.upvotes - a.upvotes);
+          setreviews(sortedReviews);
           //fetching iimgs urls from review
           const imageearr = data.flatMap(review => review.images || []);
           setimages(imageearr);
@@ -114,9 +114,9 @@ const Selected_item = () => {
           <Typewriter line="A spot loved, lived, and now shared — come see why it stands out." />
         </div>
       </div>
-       
 
-       {/* main div contain every thing out of design */}
+
+      {/* main div contain every thing out of design */}
       <div className="main flex flex-col items-center justify-center gap-15 mt-5">
 
 
@@ -176,17 +176,17 @@ const Selected_item = () => {
         {/* summary if aviavble */}
         {restaurantData?.summary ? (
           <div className="w-[90vw] h-[50vh] appear-apply  bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10 overflow-hidden relative p-6">
-          <div className="h-1 w-full bg-[#8a3ab9] rounded-full mt-5 mb-4"></div>
-          <span className="text-[#29264A] bg-white mx-2 text-2xl md:text-3xl font-bold absolute top-6 left-18 text-center mb-2">
-            Vibe Check
-          </span>
-          
-          <div className="w-full bg-transparent text-lg  text-gray-800 px-6 border-y h-[90%] border-gray-300 my-5 py-4">
-            <p className="text-lg">{restaurantData?.summary}</p>
+            <div className="h-1 w-full bg-[#8a3ab9] rounded-full mt-5 mb-4"></div>
+            <span className="text-[#29264A] bg-white mx-2 text-2xl md:text-3xl font-bold absolute top-6 left-18 text-center mb-2">
+              Vibe Check
+            </span>
+
+            <div className="w-full bg-transparent text-lg  text-gray-800 px-6 border-y h-[90%] border-gray-300 my-5 py-4">
+              <p className="text-lg">{restaurantData?.summary}</p>
+            </div>
           </div>
-        </div>
-        ):(null)}
-        
+        ) : (null)}
+
 
 
 
@@ -216,7 +216,7 @@ const Selected_item = () => {
           </div>
         </div>
 
-       
+
 
         <div className="w-[90vw]  appear-apply h-[30vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8]  rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10  overflow-hidden relative p-6">
 
@@ -316,7 +316,7 @@ const Selected_item = () => {
           </div>
         </div>
 
-        
+
 
         {/* Reviews */}
         <div className="w-[90vw] appear-apply h-[60vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10 overflow-hidden relative p-6">
@@ -344,7 +344,7 @@ const Selected_item = () => {
                 >
                   <p className="text-base md:text-lg">{review.review_text}</p>
                   <div className="flex items-center justify-between"><div className="text-lg">Upvotes: {review.upvotes || 0}</div>
-                    <div> {review.upvoted_by?.includes((auth.user != null ) ? auth.user.uid : "") ? (
+                    <div> {review.upvoted_by?.includes((auth.user != null) ? auth.user.uid : "") ? (
                       <button
                         disabled
                         className="mt-2 px-4 py-1 text-lg cursor-not-allowed bg-gray-400 text-white rounded"
@@ -367,7 +367,7 @@ const Selected_item = () => {
         </div>
 
 
-         {/* Map */}
+        {/* Map */}
         <div className="w-[90vw] appear-apply h-[60vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8] px-6 rounded-3xl shadow-2xl nunito mx-auto mt-7 mb-2 overflow-hidden relative pt-6">
           <div className="h-1 w-full bg-[#8a3ab9] rounded-full mt-5 mb-4 "></div>
           <span className="text-[#29264A] bg-white mx-2 text-2xl md:text-3xl font-bold absolute top-6 left-18 text-center mb-2">

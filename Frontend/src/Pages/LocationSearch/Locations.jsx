@@ -3,7 +3,7 @@ import ItemLister from '../Items/ItemLister';
 
 const Locations = ({ locality }) => {
   return (
-    <div>
+    <div className='appear-apply'>
       <ItemLister/>
     </div>
   );
