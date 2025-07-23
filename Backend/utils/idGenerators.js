@@ -18,3 +18,17 @@ export function generateUserId(email) {
     .digest('hex')
     .substring(0, 12);
 }
+
+export function generateQuestionId(headline, userId) {
+  return crypto.createHash('sha256')
+    .update(`${headline.trim().toLowerCase()}__${userId}`)
+    .digest('hex')
+    .substring(0, 12);
+}
+
+export function generateCommentId(parentId, userId, timestamp = Date.now()) {
+  return crypto.createHash('sha256')
+    .update(`${parentId}__${userId}__${timestamp}`)
+    .digest('hex')
+    .substring(0, 12);
+}
