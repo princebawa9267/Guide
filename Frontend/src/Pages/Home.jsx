@@ -39,7 +39,7 @@ const Home = () => {
 
   return (
     <>
-      <div className=" ">
+      <div className="overflow-hidden">
 
         {/* div contain design */}
         <div className='relative h-[60vh] flex flex-col gap-20'>
@@ -69,7 +69,7 @@ const Home = () => {
 
 
       {/* saab kuj main vich payo */}
-      <div className='main flex flex-col items-center justify-center gap-15  mt-5'>
+      <div className='main flex flex-col items-center justify-center gap-15 overflow-hidden mt-5'>
 
         {/* Content BELOW the SVG section */}
         <div className=" p-4 appear-apply" ref={search_ref}>
