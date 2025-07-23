@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Button, Divider, ListItemIcon, ListItemText } from "@mui/material";
+import Navbar from '../../Components/Navbar';
 
 import Post from './Post';
 
@@ -14,10 +15,29 @@ const RadditSystem = () => {
 ];
 
   return (
-    <div className='flex flex-col space-y-4 p-4 min-h-screen bg-gray-100'>
+    <div className='flex flex-col space-y-4  min-h-screen bg-gray-100'>
+      {/* Header */}
+      <div className='relative h-[30vh] flex flex-col gap-20'>
+
+          {/* design  */}
+          <svg
+            className="absolute top-0 left-0 w-full h-full"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="none"
+            viewBox="0 0 800 400"
+          >
+            <path d="M 0 350 C 200 400 500 400 800 300    L 800 0 L 0 0 Z" fill="#8a3ab9" />
+          </svg>
+
+          {/* Content inside SVG area */}
+          <div className="relative z-10 p-2 text-center">
+            <Navbar />
+          </div>
+
+        </div>
 
       {/* Button Divs */}
-      <div className='flex gap-5'>
+      <div className='flex gap-5 m-10 '>
         <Button className='!text-black' variant='outlined'>All</Button>
         <Button className='!text-black' variant='outlined'>✨Popular</Button>
         <Button className='!text-black' variant='outlined'>📋New</Button>

@@ -193,10 +193,10 @@ const Navbar = () => {
                                 )}
                             </li>
                             <li>
-                                <NavLink to="#" className={({ isActive }) =>
+                                <NavLink to="/TouristHub" className={({ isActive }) =>
                                     `block py-2 px-3 cursor-pointer rounded-sm ${isActive ? 'text-[#8a3ab9] font-semibold' : 'text-[#766f6f]'
                                     }`
-                                }>Pricing</NavLink>
+                                }>TouristHub</NavLink>
                             </li>
                             <li>
                                 <NavLink to="#" className={({ isActive }) =>

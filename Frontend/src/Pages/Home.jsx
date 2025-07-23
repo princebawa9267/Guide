@@ -39,7 +39,7 @@ const Home = () => {
 
   return (
     <>
-      <div className="">
+      <div className=" ">
 
         {/* div contain design */}
         <div className='relative h-[60vh] flex flex-col gap-20'>
