@@ -6,7 +6,7 @@ import { generateQuestionId } from '../utils/idGenerators.js';
 const router = express.Router();
 
 // Get all questions (optional tag filtering)
-router.get('/', async (req, res) => {
+router.get('/all', async (req, res) => {
   try {
     let query = db.collection('questions');
     if (req.query.tag) {
@@ -19,6 +19,11 @@ router.get('/', async (req, res) => {
       return {
         id: doc.id,
         headline: data.headline,
+        photoURL: data.photoURL || null, // <-- include photoURL
+        userName: data.userName || 'Anonymous', // <-- include userName
+        description: data.description || '',
+        created_at: data.created_at || new Date().toISOString(),
+        upvotes: data.upvotes || 0,
         tags: data.tags || [],
         image_url: data.image_url || null  // <-- include image_url
       };
@@ -44,7 +49,7 @@ router.get('/:id', async (req, res) => {
 // Create a new question
 router.post('/', async (req, res) => {
   try {
-    const { user_id, headline, description, tags = [], image_url = null } = req.body;
+    const { user_id, headline,photoURL,userName, description, tags = [], image_url = null } = req.body;
 
     if (!user_id || !headline) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -57,6 +62,8 @@ router.post('/', async (req, res) => {
       headline,
       description,
       tags,
+      photoURL,
+      userName,
       image_url,  // <-- added image_url here
       upvotes: 0,
       upvoted_by: [],

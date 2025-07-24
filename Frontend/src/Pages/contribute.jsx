@@ -96,7 +96,6 @@ const Contribute = () => {
 
   // New handleSubmit function to handle the API call
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
-    console.log('Submitting:', values);
     toast.loading("Submitting your review...", { toastId: "submitToast" });
 
 
@@ -147,7 +146,6 @@ const Contribute = () => {
           isLoading: false,
           autoClose: 3000,
         });
-        console.log('API Response:', result);
         resetForm();
         setMarkedPosition(null);
         setOpeningTime('');
@@ -246,7 +244,7 @@ const Contribute = () => {
               {/* Name */}
               <label className="flex flex-col relative justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">
                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Name :</span>
-                <Field type="text" name="Name" onChange={(e) => handle_resturentsuggestion(e, setFieldValue)} className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter Location name" />
+                <Field type="text" name="Name" onChange={(e) => handle_resturentsuggestion(e, setFieldValue)} className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter Resturant name" />
                 {suggestions.length > 0 && (
                   <ul className="absolute z-50 mt-[8.5rem] ml-5 w-[80%] bg-white border border-gray-300 rounded-2xl shadow-lg overflow-hidden">
                     {suggestions.map((sugg, idx) => (

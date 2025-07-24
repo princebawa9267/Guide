@@ -55,8 +55,6 @@ const ShopDashboard = () => {
                 snapshot.docs.forEach((docSnap) => {
                     const data = docSnap.data();
 
-                    console.log("Restaurant Fetched:", data); // 🔍 DEBUG
-
                     list.push({
                         restaurant_id: docSnap.id,
                         ...data,
@@ -128,7 +126,7 @@ const ShopDashboard = () => {
                     <Navbar />
                 </div>
                 <div className="p-4 text-center relative mx-auto">
-                    <Typewriter line="Add your flavor to the journey — register your shop, gather reviews, and build real trust." />
+                    <Typewriter line="Your business, your journey — manage your shop, engage with travelers, and build lasting trust.." />
                 </div>
             </div>
 

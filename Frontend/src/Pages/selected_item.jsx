@@ -38,8 +38,7 @@ const Selected_item = () => {
 
     }
   }, [restaurantData]);
-  console.log(restaurantData.restaurant_id);
-  console.log("Reviews:", reviews);
+  
 
   const getEmoji = (score) => {
     if (score < 1) {
