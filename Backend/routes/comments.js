@@ -1,6 +1,6 @@
 import express from 'express';
 import db from '../firebase/firebase.js';
-import { generateCommentId } from '../utils/idGenerator';
+import { generateCommentId } from '../utils/idGenerators.js';
 
 const router = express.Router();
 
@@ -119,4 +119,4 @@ router.delete('/:commentId', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

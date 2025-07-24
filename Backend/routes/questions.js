@@ -1,6 +1,7 @@
 import express from 'express';
 import db from '../firebase/firebase.js';
-import { generateQuestionId } from '../utils/idGenerator';
+import { generateQuestionId } from '../utils/idGenerators.js';
+
 
 const router = express.Router();
 
