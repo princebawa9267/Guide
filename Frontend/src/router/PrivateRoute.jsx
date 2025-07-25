@@ -14,7 +14,7 @@ const PrivateRoute = ({children}) => {
     // Redux store
     console.log("Private Route", auth);
 
-    return auth?.notLoadedDataYet ? <div></div> :  auth?.isLoggedIn ? children : <Navigate to="/signin" replace={true} />
+    return auth?.notLoadedDataYet ? <div></div> : auth?.user ? (auth?.user.emailVerified ? children : <Navigate to="/user-verification" replace={true} />) : <Navigate to="/signin" replace={true} />
 }
 
 export default PrivateRoute;

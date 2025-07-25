@@ -14,7 +14,7 @@ export const createAccountWithEmailAndPassword = createAsyncThunk("auth/createAc
 
             // send verification link
             await sendEmailVerification(user);
-            alert("📩 Verification email sent! Please check your inbox.");
+            // alert("📩 Verification email sent! Please check your inbox.");
 
             // Update user details on Firestore
             if (user) {
@@ -39,11 +39,29 @@ export const createAccountWithEmailAndPassword = createAsyncThunk("auth/createAc
         }
         catch (error) {
             console.log("Error ", error.message);
-            toast.error(error.message)
+            toast.error("Something went wrong while creating account");
             return rejectWithValue(error.message);
         }
     }
 );
+
+// Resend Verification Email
+export const resendVerificationEmail = createAsyncThunk("/auth/resendVerificationEmail",
+    async ({ navigate }, { rejectWithValue }) => {
+        try {
+            const user = auth.currentUser;
+            if (user) {
+                await sendEmailVerification(user);
+                // alert("📩 Verification email sent! Please check your inbox.");
+            }
+        }
+        catch (error) {
+            toast.error("Something went wrong while resending verification email");
+            return rejectWithValue(error.message);
+        }
+    }
+)
+
 
 
 export const loginUserWithEmailAndPassword = createAsyncThunk("/auth/loginUserWithEmailAndPassword",
@@ -68,11 +86,15 @@ export const loginUserWithEmailAndPassword = createAsyncThunk("/auth/loginUserWi
             }
         }
         catch (error) {
-            toast.error(error.message)
+            toast.error("Email or password is incorrect");
             return rejectWithValue(error.message);
         }
     }
 )
+
+
+
+
 
 // Signin With Google Method 
 export const signInWithGoogle = createAsyncThunk("/auth/signInWithGoogle",
@@ -92,7 +114,7 @@ export const signInWithGoogle = createAsyncThunk("/auth/signInWithGoogle",
             }
         }
         catch (error) {
-            toast.error(error.message);
+            toast.error("Something went wrong");
             return rejectWithValue(error.message);
         }
     }
@@ -111,37 +133,38 @@ export const logoutUser = createAsyncThunk("/auth/logoutUser",
 )
 
 export const authenticate = createAsyncThunk("/auth/authenticate",
-    async ({navigate,dispatch}, { rejectWithValue }) => {
+    async ({ navigate, dispatch }, { rejectWithValue }) => {
         try {
             onAuthStateChanged(auth, async (user) => {
+
                 if (user) {
-                    if (!user.emailVerified) {
-                        console.log("User email id is not verified yet");
+                    // if (!user.emailVerified) {
+                    //     console.log("User email id is not verified yet");
+                    // }
+                    // else {
+                    const providerId = user.providerData[0]?.providerId;
+                    if (providerId === "google.com") {
+                        console.log("User Details with google", user);
+                        dispatch(setUser({
+                            uid: user?.uid,
+                            email: user?.email,
+                            displayName: user?.displayName,
+                            emailVerified: user?.emailVerified,
+                            photoURL: user?.photoURL
+                        }))
                     }
-                    else {
-                        const providerId = user.providerData[0]?.providerId;
-                        if (providerId === "google.com") {
-                            console.log("User Details with google", user);
-                            dispatch(setUser({
-                                uid: user?.uid,
-                                email: user?.email,
-                                displayName: user?.displayName,
-                                emailVerified: user?.emailVerified,
-                                photoURL: user?.photoURL
-                            }))
-                        }
-                        else if (providerId === "password") {
-                            console.log("User Details ", user);
-                            const docRef = doc(db, "Users", String(user.uid));
-                            const docSnap = await getDoc(docRef);
-                            dispatch(setUser({
-                                uid: user.uid,
-                                email: user.email,
-                                displayName: `${docSnap.data().firstName} ${docSnap.data().lastName}`,
-                                emailVerified: user.emailVerified,
-                                photoURL: user.photoURL
-                            }))
-                        }
+                    else if (providerId === "password") {
+                        console.log("User Details ", user);
+                        const docRef = doc(db, "Users", String(user.uid));
+                        const docSnap = await getDoc(docRef);
+                        dispatch(setUser({
+                            uid: user.uid,
+                            email: user.email,
+                            displayName: `${docSnap.data().firstName} ${docSnap.data().lastName}`,
+                            emailVerified: user.emailVerified,
+                            photoURL: user.photoURL
+                        }))
+                        // }
                     }
                 }
             })
@@ -157,7 +180,7 @@ const initialState = {
     user: null,
     loading: false,
     error: null,
-    notLoadedDataYet : true, // This will be set to false once the user data is loaded
+    notLoadedDataYet: true, // This will be set to false once the user data is loaded
 }
 
 const authSlice = createSlice({
@@ -170,7 +193,10 @@ const authSlice = createSlice({
             state.error = null;
             state.loading = false;
             console.log("User set successfully")
-        }
+        },
+        updateEmailVerified: (state, action) => {
+            state.user.emailVerified = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -217,31 +243,31 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.error;
             })
-        .addCase(authenticate.pending,(state) => {
-            state.loading = true;
-            state.error = null;
-            state.isLoggedIn = false;
-            state.user = null;
-            console.log("Authenticating user...");
-        })
-        .addCase(authenticate.fulfilled, (state,action) => {
-            state.isLoggedIn = true;
-            state.error = null;
-            state.loading = false;
-            state.user = action.payload;
+            .addCase(authenticate.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.isLoggedIn = false;
+                state.user = null;
+                console.log("Authenticating user...");
+            })
+            .addCase(authenticate.fulfilled, (state, action) => {
+                state.isLoggedIn = true;
+                state.error = null;
+                state.loading = false;
+                state.user = action.payload;
 
-            state.notLoadedDataYet = false; // Set to false once the user data is loaded
-            console.log(action.payload);
-        })
-        .addCase(authenticate.rejected, (state,action) => {
-            state.isLoggedIn = false;
-            state.error = action.payload;
-            state.loading = false;
-            state.dataLoaded = false;
-            state.user = null;
-        })
+                state.notLoadedDataYet = false; // Set to false once the user data is loaded
+                console.log(action.payload);
+            })
+            .addCase(authenticate.rejected, (state, action) => {
+                state.isLoggedIn = false;
+                state.error = action.payload;
+                state.loading = false;
+                state.dataLoaded = false;
+                state.user = null;
+            })
     }
 })
 
-export const { setUser } = authSlice.actions;
+export const { setUser, updateEmailVerified } = authSlice.actions;
 export default authSlice.reducer;

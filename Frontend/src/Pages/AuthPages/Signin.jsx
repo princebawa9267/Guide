@@ -20,7 +20,7 @@ const Signin = () => {
   const navigate = useNavigate();
 
   const dispatch = useAppDispatch();
-  const { auth } = useAppSelector(store => store);
+  const  auth  = useAppSelector(store => store.auth);
 
   const [timeLeft, setTimeLeft] = useState(60);
   const [otpSent, setOtpSent] = useState(false);

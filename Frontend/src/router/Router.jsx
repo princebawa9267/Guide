@@ -27,6 +27,9 @@ const Router = () => {
         {/* <Route */}
         <Route path='/contribute' element={
             <PrivateRoute>
+              {
+                console.log("Contribute Page Rendered", auth)
+              }
               <Contribute/>
             </PrivateRoute>
           }></Route>
@@ -37,12 +40,12 @@ const Router = () => {
           <PrivateRoute>
           <Shop_register/>
           </PrivateRoute>
-          }/>
+          }></Route>
         <Route path="/listyourshop/dashbord" element={
           <PrivateRoute>
           <ShopDashboard/>
           </PrivateRoute>
-          }/>
+          }></Route>
       </Routes>
     </div>
   )
