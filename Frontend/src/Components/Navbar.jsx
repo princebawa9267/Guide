@@ -135,16 +135,10 @@ const Navbar = () => {
                             </div>
                             <ul className="py-2" aria-labelledby="user-menu-button">
                                 <li>
-                                    <NavLink to="#" className="block px-4 py-2 text-sm text-gray-500">Dashboard</NavLink>
+                                    <NavLink to="#" className="block px-4 py-2 hover:text-[#8a3ab9] hover:font-bold text-sm text-gray-500">User Dashboard</NavLink>
                                 </li>
                                 <li>
-                                    <NavLink to="#" className="block px-4 py-2 text-sm text-gray-500">Settings</NavLink>
-                                </li>
-                                <li>
-                                    <NavLink to="#" className="block px-4 py-2 text-sm text-gray-500">Earnings</NavLink>
-                                </li>
-                                <li>
-                                    <Button variant="contained" color='error' sx={{ textTransform: "none" }} onClick={logout}>Logout</Button>
+                                    <Button variant="contained" color='error' className='transition hover:scale-105' sx={{ textTransform: "none" }} onClick={logout}>Logout</Button>
                                 </li>
                             </ul>
                         </div>
@@ -161,20 +155,20 @@ const Navbar = () => {
                         <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-transparent dark:border-gray-700">
                             <li>
                                 <NavLink to="/" className={({ isActive }) =>
-                                    `block py-2 px-3 cursor-pointer rounded-sm ${isActive ? 'text-[#8a3ab9] font-semibold' : 'text-[#766f6f]'
+                                    `block py-2 px-3 cursor-pointer rounded-sm ${isActive ? 'text-[#8a3ab9] font-semibold transition scale-105' : 'text-[#766f6f]'
                                     }`
                                 } aria-current="page">Home</NavLink>
                             </li>
                             <li>
                                 <NavLink to="/contribute" className={({ isActive }) =>
-                                    `block py-2 px-3 cursor-pointer rounded-sm ${isActive ? 'text-[#8a3ab9] font-semibold' : 'text-[#766f6f]'
+                                    `block py-2 px-3 cursor-pointer rounded-sm ${isActive ? 'text-[#8a3ab9] font-semibold transition scale-105' : 'text-[#766f6f]'
                                     }`
                                 }>Contribute</NavLink>
                             </li>
                             <li className='relative' ref={dropdownRef}>
                                 <button
                                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                                    className="block py-2 px-3 cursor-pointer rounded-sm text-[#766f6f] hover:text-[#8a3ab9] font-medium"
+                                    className="block py-2 px-3 cursor-pointer rounded-sm  text-[#766f6f] hover:text-[#8a3ab9] transition scale-105 font-medium"
                                 >
                                     List Your Shop ▾
                                 </button>
@@ -199,14 +193,14 @@ const Navbar = () => {
                                 )}
                             </li>
                             <li>
-                                <NavLink to="#" className={({ isActive }) =>
-                                    `block py-2 px-3 cursor-pointer rounded-sm ${isActive ? 'text-[#8a3ab9] font-semibold' : 'text-[#766f6f]'
+                                <NavLink to="/TouristHub" className={({ isActive }) =>
+                                    `block py-2 px-3 cursor-pointer rounded-sm ${isActive ? 'text-[#8a3ab9] font-semibold transition scale-105' : 'text-[#766f6f]'
                                     }`
-                                }>Pricing</NavLink>
+                                }>TouristHub</NavLink>
                             </li>
                             <li>
                                 <NavLink to="#" className={({ isActive }) =>
-                                    `block py-2 px-3 cursor-pointer rounded-sm ${isActive ? 'text-[#8a3ab9] font-semibold' : 'text-[#766f6f]'
+                                    `block py-2 px-3 cursor-pointer rounded-sm ${isActive ? 'text-[#8a3ab9] font-semibold transition scale-105' : 'text-[#766f6f]'
                                     }`
                                 }>Contact</NavLink>
                             </li>

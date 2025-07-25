@@ -5,6 +5,12 @@ import admin from 'firebase-admin';
 
 const router = express.Router();
 
+//code for varification of restaurant
+
+// await db.collection("restaurants").doc(restaurantId).update({
+//   verification_status: true
+// });
+
 // Add new restaurant by the owner
 router.post("/addedbyowner", async (req, res) => {
   try {
@@ -16,7 +22,7 @@ router.post("/addedbyowner", async (req, res) => {
       phone_number,
       email_address,
       link,
-      varification_status, // spelling inconsistent — fixed later
+      varification_status, 
       locality,
       city,
       GST_number,
@@ -28,13 +34,13 @@ router.post("/addedbyowner", async (req, res) => {
 
     //Required field validation
     if (
-      !name_of_restaurant || !owner_name ||  !user_id ||
+      !name_of_restaurant || !owner_name || !user_id ||
       !open_hours || !longitude || !locality || !city || !latitude || images.length === 0
     ) {
       return res.status(400).json({
         error: "name_of_restaurant, owner_name, user_id, open_hours, longitude, locality, city, latitude and images are required"
       });
-    }else{
+    } else {
       console.log("Payload received:", req.body);
     }
 
@@ -50,9 +56,13 @@ router.post("/addedbyowner", async (req, res) => {
         city,
         open_hours,
         latitude,
+        GST_number,
+        phone_number,
         link,
+        verification_status: false,
         longitude,
         updated_by: user_id,
+        images,
         updated_from: "owner",
         last_updated: Date.now()
       });
@@ -66,6 +76,10 @@ router.post("/addedbyowner", async (req, res) => {
         open_hours,
         latitude,
         longitude,
+        varification_status: false, 
+        GST_number,
+        images,
+        phone_number,
         link,
         price_range: 0,
         review_count: 0,
@@ -82,7 +96,7 @@ router.post("/addedbyowner", async (req, res) => {
 
     await db.collection("Users").doc(user_id).set({
       isOwner: true
-    }, { merge: true }); // 🛠 FIXED typo: 'mergerd' → 'merge'
+    }, { merge: true });
 
 
     // Add or update owner record
@@ -100,8 +114,6 @@ router.post("/addedbyowner", async (req, res) => {
       latitude,
       open_hours,
       images,
-      status: "pending",
-      verification_status: false, // 🛠 spelling corrected
       restaurant_ids: admin.firestore.FieldValue.arrayUnion(restaurant_id),
       updated_at: Date.now()
     }, { merge: true });

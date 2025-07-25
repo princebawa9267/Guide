@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { use, useEffect } from 'react';
 import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
 import Typewriter from '../Components/typewriter';
@@ -22,24 +22,80 @@ const Contribute = () => {
 
   const [searchParams] = useSearchParams();
 
-const [markedPosition, setMarkedPosition] = useState(() => {
-  const longitude = parseFloat(searchParams.get('longitude')) ;
-  const latitude = parseFloat(searchParams.get('latitude'));
+  const [suggestions, setSuggestions] = useState([]);
+  const [allrestaurants, setAllRestaurants] = useState([]); // State to hold all restaurant names
+  const [restaurent_name, setRestaurentName] = useState(''); // State to hold the restaurant name input
 
-  return (longitude && latitude) ? [longitude, latitude] : null;
-});
-  
+  const [markedPosition, setMarkedPosition] = useState(() => {
+    const longitude = parseFloat(searchParams.get('longitude'));
+    const latitude = parseFloat(searchParams.get('latitude'));
+
+
+
+    return (longitude && latitude) ? [longitude, latitude] : null;
+  });
+
   const [openingTime, setOpeningTime] = useState('');
   const [closingTime, setClosingTime] = useState('');
-  const [openhours, setopenhours] = useState('')
+  const [openhours, setopenhours] = useState('');
 
+
+  //useeffect for suggestions
+  // This effect fetches all restaurant names from the database and sets them in state
+  useEffect(() => {
+
+    try {
+      const fetchdata = async () => {
+        const snapshot = await getDocs(collection(db, 'restaurants'));//getting data from restaurants collection
+        const reasturent_name_set = new Set();
+
+
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.name) {
+            reasturent_name_set.add(data.name.toLowerCase());//adding the name of restaurant to set
+          }
+        });
+        setAllRestaurants([...reasturent_name_set]);//setting the state of all restaurants
+      }
+      fetchdata();
+    } catch (error) {
+      console.log("Error fetching data:", error);
+    }
+  }, [])
+
+
+  // Function to handle restaurant name input and suggestions
+  // This function updates the restaurant name state and filters suggestions based on input
+  const handle_resturentsuggestion = (e, setFieldValue) => {
+    const value = e.target.value;
+    setFieldValue("Name", value);       // Update Formik value
+    setRestaurentName(value);           // Also update local state for suggestion filtering
+
+    if (value.trim() === '') {
+      setSuggestions([]);
+    } else {
+      const filtered = allrestaurants.filter(loc =>
+        loc.startsWith(value.toLowerCase())
+      );
+      setSuggestions(filtered.slice(0, 5));
+    }
+  };
+
+
+  // Function to handle suggestion click
+  // This function sets the restaurant name state to the selected suggestion and clears suggestions
+  const handleclicksuggestion = (suggestions, setFieldValue) => {
+    setFieldValue("Name", suggestions);
+    setRestaurentName(suggestions);
+    setSuggestions([]);
+  };
 
   // Getting user id
   const { auth } = useAppSelector(store => store);
 
   // New handleSubmit function to handle the API call
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
-    console.log('Submitting:', values);
     toast.loading("Submitting your review...", { toastId: "submitToast" });
 
 
@@ -90,7 +146,6 @@ const [markedPosition, setMarkedPosition] = useState(() => {
           isLoading: false,
           autoClose: 3000,
         });
-        console.log('API Response:', result);
         resetForm();
         setMarkedPosition(null);
         setOpeningTime('');
@@ -155,12 +210,12 @@ const [markedPosition, setMarkedPosition] = useState(() => {
           </div>
         </div>
 
-         <div className='flex justify-center items-center appear-apply  nunito text-white bg-[#8a3ab9] w-[45vw] mt-15  rounded-t-3xl '>Here add your Experince</div>
+        <div className='flex justify-center items-center appear-apply  nunito text-white bg-[#8a3ab9] w-[45vw] mt-15  rounded-t-3xl '>Here add your Experince</div>
 
         {/* Form */}
         <Formik
           initialValues={{
-            Name: searchParams.get('name') || '', Location: searchParams.get('location')|| "", City: searchParams.get('city')|| "", latitude: searchParams.get('latitude')|| "", longitude: searchParams.get('longitude')|| "", Popular_Dish: "", Price_Level: "",
+            Name: searchParams.get('name') || '', Location: searchParams.get('location') || "", City: searchParams.get('city') || "", latitude: searchParams.get('latitude') || "", longitude: searchParams.get('longitude') || "", Popular_Dish: "", Price_Level: "",
             Food_Quality: "", Cleanliness: "", Service: "",
             Open_Hours: openhours, Images: [], Your_Experience: ""
           }}
@@ -183,13 +238,27 @@ const [markedPosition, setMarkedPosition] = useState(() => {
 
           onSubmit={handleSubmit} // Changed from original to use handleSubmit
         >
-          {({ isSubmitting, setFieldValue }) => (
+          {({ isSubmitting, setFieldValue, values }) => (
             <Form className="w-[90vw] max-w-7xl mb-10 bg-gradient-to-br appear-apply from-white via-[#f9f5ff] to-[#e5dcf8] rounded-3xl shadow-2xl nunito grid grid-cols-3 grid-auto-rows gap-6 text-xl p-8">
 
               {/* Name */}
-              <label className="flex flex-col justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">
+              <label className="flex flex-col relative justify-center gap-2 w-full m-3 p-4 h-min-[25vh] cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300">
                 <span className="text-[#8a3ab9] font-semibold tracking-wide">Name :</span>
-                <Field type="text" name="Name" className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter Location name" />
+                <Field type="text" name="Name" onChange={(e) => handle_resturentsuggestion(e, setFieldValue)} className="w-full border-none text-[#29264A] focus:ring-[#8a3ab9] bg-transparent text-lg px-2 placeholder-gray-400 focus:outline-none" placeholder="Enter Resturant name" />
+                {suggestions.length > 0 && (
+                  <ul className="absolute z-50 mt-[8.5rem] ml-5 w-[80%] bg-white border border-gray-300 rounded-2xl shadow-lg overflow-hidden">
+                    {suggestions.map((sugg, idx) => (
+                      <li
+                        key={idx}
+                        onClick={() => handleclicksuggestion(sugg, setFieldValue)}
+                        className="px-4 py-2 text-[#29264A] hover:bg-[#f0e6f6] cursor-pointer capitalize text-base transition-all"
+                      >
+                        {sugg}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
                 <div className='h-1 rounded-full w-full bg-[#8a3ab9]'></div>
                 <ErrorMessage name="Name" component="div" className="text-red-500 text-sm" />
               </label>

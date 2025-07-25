@@ -52,10 +52,6 @@ const Shop_register = () => {
     // Getting user id
     const { auth } = useAppSelector(store => store);
 
-    console.log("Auth state in shop register:", auth);
-
-    console.log("auth.user.id is:", auth?.user?.uid);
-
     useEffect(() => {
         // ⛔️ Prevent running if there's no ID (i.e. user is adding a new shop)
         if (!restaurantIdFromURL) {
@@ -147,7 +143,6 @@ const Shop_register = () => {
 
         try {
             const response = await axios.post('http://localhost:3000/restaurants/addedbyowner', payload); // ✅ FIXED: double slashes removed
-            console.log("Shop register response:", response.data);
 
             toast.update("submittoast", {
                 render: "Shop registered successfully! 🎉",

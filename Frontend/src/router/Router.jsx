@@ -10,26 +10,24 @@ import LocationSearchPage from '../Pages/LocationSearch/LocationSearchPage'
 import Selected_item from '../Pages/selected_item'
 import Shop_register from '../Pages/Shop_register'
 import ShopDashboard from '../Pages/ShopDashboard'
+import RadditSystem from '../Pages/RadditPage/RadditSystem'
 import PrivateRoute from './PrivateRoute'
 import { useAppSelector } from '../state/store'
 
 const Router = () => {
 
-  const {auth} = useAppSelector(store => store);
+  const { auth } = useAppSelector(store => store);
 
   return (
     <div>
       <Routes>
-        <Route path='/' element={<Home/>}></Route>
-        <Route path='/searched-page' element={<SearchedPage/>}></Route>
-        <Route path='/signin' element={<Signin/>}></Route>
-        <Route path='/signup' element={<Signup/>}></Route>
+        <Route path='/' element={<Home />}></Route>
+        <Route path='/searched-page' element={<SearchedPage />}></Route>
+        <Route path='/signin' element={<Signin />}></Route>
+        <Route path='/signup' element={<Signup />}></Route>
         {/* <Route */}
         <Route path='/contribute' element={
             <PrivateRoute>
-              {
-                console.log("Contribute Page Rendered", auth)
-              }
               <Contribute/>
             </PrivateRoute>
           }></Route>
@@ -38,15 +36,16 @@ const Router = () => {
         <Route path="/selected-item/:restaurantId" element={<Selected_item />} />
         <Route path="/listyourshop/register" element={
           <PrivateRoute>
-          <Shop_register/>
+            <Shop_register />
           </PrivateRoute>
           }></Route>
         <Route path="/listyourshop/dashbord" element={
           <PrivateRoute>
-          <ShopDashboard/>
+            <ShopDashboard />
           </PrivateRoute>
           }></Route>
       </Routes>
+
     </div>
   )
 }

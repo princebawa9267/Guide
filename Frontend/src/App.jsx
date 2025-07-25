@@ -28,9 +28,7 @@ function App() {
     <>
     
       <ToastContainer />
-      {/* <Router /> */}
-      <RadditSystem />
-      {/* <ItemLister/> */}
+      <Router />
     </>
   )
 }

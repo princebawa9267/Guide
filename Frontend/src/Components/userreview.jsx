@@ -15,7 +15,6 @@ const Userreview = () => {
   useEffect(() => {
 
     const fetchreviews=async()=>{
-      console.log(user_id);
     
     try{
     const response=await axios.get(`http://localhost:3000/reviews/${user_id}/reviews`)

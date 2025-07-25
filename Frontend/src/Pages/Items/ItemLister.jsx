@@ -69,8 +69,6 @@ const ItemLister = () => {
   return (
     <div className='flex relative min-h-[100vh] my-20 m  flex-col'>
 
-      {/* Debug log */}
-      {console.log("Restaurants from API: ", restaurant)}
 
       {/* Filter icon */}
       <div className='flex flex-col space-y-2 items-end absolute bottom-5 right-5 z-10'>

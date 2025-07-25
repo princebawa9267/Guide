@@ -1,110 +1,129 @@
-import React, { useState } from 'react'
-import { ThumbUpOffAltOutlined, ThumbUpAlt, Comment, ThumbDownOutlined,ThumbDown } from '@mui/icons-material';
-import {  Divider, ListItemIcon } from "@mui/material";
+import React, { useState } from 'react';
+import dayjs from 'dayjs';// Import dayjs for date formatting its an open-source JavaScript library for parsing, validating, manipulating, and formatting dates.
 
-import { FaUser } from "react-icons/fa";
+import {
+    ThumbUpOffAltOutlined,
+    ThumbUpAlt,
+    ThumbDownOutlined,
+    ThumbDown,
+    Comment,
+} from '@mui/icons-material';
+import { Divider, ListItemIcon } from '@mui/material';
 
-
-const Post = ({item}) => {
-
-    const [like, setLike] = useState(item.postLiked);
-    const [dislike, setDislike] = useState(item.postDisLiked);
+const Post = ({
+    heading = 'Untitled Post',
+    description = 'No description provided.',
+    created_at = 'Unknown Date',
+    postLiked = false,
+    postDisLiked = false,
+    likeCount = 0,
+    dislikeCount = 0,
+    img = null, // URL of user image
+    name = 'Anonymous', // User name
+}) => {
+    const [like, setLike] = useState(postLiked);
+    const [dislike, setDislike] = useState(postDisLiked);
+    const [likes, setLikes] = useState(likeCount);
+    const [dislikes, setDislikes] = useState(dislikeCount);
 
     const handleLike = () => {
-        setLike(!like);
-        // Note here i am toggling the like state before making the API call because Backend take some time to respond
-        // If i will dependend on Backend then it will take time to update the UI
-        // We have usually seen on LinkedIn and other platforms that they update the UI first 
-        // and then make the API call if i fall then message is shown your post is not liked or something like that
         if (like) {
-            item.likeCount -= 1;
+            setLike(false);
+            setLikes(likes - 1);
         } else {
-            if(dislike){
-                setDislike(false); // If user likes the post, we reset dislike
-                item.dislikeCount -= 1; 
+            setLike(true);
+            setLikes(likes + 1);
+            if (dislike) {
+                setDislike(false);
+                setDislikes(dislikes - 1);
             }
-            item.likeCount += 1;
         }
-
-        // Backend API call to update like count change boolean and set likeCount accordingly
-
     };
 
     const handleDislike = () => {
-        setDislike(!dislike);
-        // Similar to like, we toggle dislike state and update dislike count
         if (dislike) {
-            item.dislikeCount -= 1;
+            setDislike(false);
+            setDislikes(dislikes - 1);
         } else {
-            if(like){
+            setDislike(true);
+            setDislikes(dislikes + 1);
+            if (like) {
                 setLike(false);
-                item.likeCount -= 1; // If user dislikes the post, we reset like
+                setLikes(likes - 1);
             }
-            item.dislikeCount += 1;
         }
-
-        // Backend API call to update dislike count change boolean and set dislikeCount accordingly
-    }
+    };
 
     return (
-        <div>
-            <div className='flex flex-col w-[60vw] bg-white shadow-lg rounded-lg p-6'>
-                <div className='flex items-center'>
-                    <FaUser className='text-4xl text-gray-600' />
-                    <div className='flex flex-col ml-4'>
-                        <p className='font-bold text-xl'>Topic Headings</p>
-                        <p className='text-gray-500 text-[12px]'>Posted By : {item.postBy}  | {item.postTime}</p>
+        <div className="flex flex-col w-[55vw] bg-white shadow-lg  transition-transform duration-300 hover:scale-[1.02] rounded-2xl p-6">
+            {/* User Info */}
+            <div className="flex items-center">
+                {img ? (
+                    <img
+                        src={img}
+                        alt="User"
+                        className="w-12 h-12 rounded-full object-cover border border-gray-300"
+                    />
+                ) : (
+                    <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-white text-xl">
+                        {name?.charAt(0).toUpperCase()}
                     </div>
+                )}
+
+                <div className="flex flex-col ml-4">
+                    <p className="text-lg font-semibold text-gray-800">{name}</p>
+                    {/* Displaying the formatted date using dayjs */}
+                    <p className="text-sm text-gray-500">
+                        Posted: {dayjs(created_at).format('DD MMM YYYY, hh:mm A')}
+                    </p>
                 </div>
-                <div className='mt-4 mb-4'>
-                    <p className=' font-bold'>This is a sample post content. It can be about any topic of interest.</p>
-                    <p className='text-gray-700'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos fuga deserunt doloremque debitis distinctio, quam ex officiis placeat non earum eius! Possimus amet non cumque nam excepturi laudantium esse nostrum.</p>
-                </div>
-                <Divider />
-                <div className='flex justify-between items-center mt-3'>
-                    {
-                        like ? (
-                            <div className='flex items-center'>
-                                <ListItemIcon>
-                                    <ThumbUpAlt className='text-blue-500 cursor-pointer' onClick={() => { handleLike() }}/> {item.likeCount}
-                                </ListItemIcon>
-                                <FaUser />
-                                <FaUser />
-                                <FaUser />
-                                <FaUser />
-                            </div>
+            </div>
+
+            {/* Heading */}
+            <div className="mt-4">
+                <p className="text-xl font-bold text-[#8a3ab9]">{heading}</p>
+            </div>
+
+            {/* Description */}
+            <div className="mt-2 mb-4">
+                <p className="text-gray-700">{description}</p>
+            </div>
+
+            <Divider />
+
+            {/* Actions */}
+            <div className="flex justify-between items-center mt-4">
+                {/* Likes */}
+                <div className="flex items-center gap-2">
+                    <ListItemIcon onClick={handleLike} className="cursor-pointer">
+                        {like ? (
+                            <ThumbUpAlt className="text-blue-500" />
                         ) : (
-                            <div className='flex items-center' onClick={() => { handleLike() }}>
-                                <ListItemIcon>
-                                    <ThumbUpOffAltOutlined className='text-gray-500 hover:text-blue-500  cursor-pointer' /> {item.likeCount}
-                                </ListItemIcon>
-                                <FaUser />
-                                <FaUser />
-                                <FaUser />
-                                <FaUser />
-                            </div>
-                        )
-                    }
-                    <div className='flex items-center'>
-                        {
-                            dislike ? (
-                                <ListItemIcon onClick={() => handleDislike()} className='flex justify-center items-center gap-1'>
-                                    <ThumbDown className='text-red-500  cursor-pointer' /> {item.dislikeCount}
-                                </ListItemIcon>
-                            ) : (
-                                <ListItemIcon  onClick={() => handleDislike()} className='flex justify-center items-center gap-1'>
-                                    <ThumbDownOutlined className='text-gray-500 hover:text-red-500  cursor-pointer' /> {item.dislikeCount}
-                                </ListItemIcon>
-                            )
-                        }
-                        <Comment className='text-gray-500 hover:text-blue-500 cursor-pointer' />
-                    </div>
+                            <ThumbUpOffAltOutlined className="text-gray-500 hover:text-blue-500" />
+                        )}
+                    </ListItemIcon>
+                    <span className="text-sm text-gray-600">{likes}</span>
                 </div>
 
+                {/* Dislikes */}
+                <div className="flex items-center gap-2">
+                    <ListItemIcon onClick={handleDislike} className="cursor-pointer">
+                        {dislike ? (
+                            <ThumbDown className="text-red-500" />
+                        ) : (
+                            <ThumbDownOutlined className="text-gray-500 hover:text-red-500" />
+                        )}
+                    </ListItemIcon>
+                    <span className="text-sm text-gray-600">{dislikes}</span>
+                </div>
 
+                {/* Comment */}
+                <div className="flex items-center gap-1 cursor-pointer">
+                    <Comment className="text-gray-500 hover:text-blue-500" />
+                </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Post
+export default Post;

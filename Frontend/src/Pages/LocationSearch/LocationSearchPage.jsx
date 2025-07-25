@@ -13,7 +13,6 @@ const LocationSearchPage = () => {
   const [line, setLine] = useState('');
 
   
- console.log(restaurant_id);
   useEffect(()=>{
     if(city){
       setLine(`Explore the best places in ${city}`);
