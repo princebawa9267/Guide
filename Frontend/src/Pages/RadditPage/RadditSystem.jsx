@@ -12,11 +12,18 @@ import Post from './Post';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
+import { collection, getDocs, query, onSnapshot, orderBy } from 'firebase/firestore';
+import { db } from '../../../src/register.js';
 import { HashLoader } from 'react-spinners';
 import { FaUser } from "react-icons/fa";
 
 const RadditSystem = () => {
 
+
+  const [showcomments, setshowcomments] = useState({});
+  const [suggestion, setsuggestion] = useState([]);       // array for suggestions
+  const [tags, settags] = useState('');                  // input text
+  const [alltags, setalltags] = useState([]);            // all tags from Firestore
 
   // State to manage user reviews
   const { auth } = useAppSelector(store => store);
@@ -31,70 +38,191 @@ const RadditSystem = () => {
   // State to manage loading state
   const [loading, setLoading] = useState(true);
 
-  // User image URL state
-  // This will hold the converted Blob URL for the user image
-  const [userImageUrl, setUserImageUrl] = useState(null);
 
-  // Conversion on image to Blob so error does not occur with image URL
-  const fetchImageAsBlob = async (imageUrl, retries = 3, delay = 1000) => {
 
-    for (let attempt = 0; attempt < retries; attempt++) {
-      try {
-        const response = await fetch(imageUrl);
-        if (!response.ok) {
-          throw new Error('Failed to fetch image');
+  //fetching all tages
+  useEffect(() => {
+    const fetchtags = async () => {
+      const snapshot = await getDocs(collection(db, 'questions'));
+      const suggestionset = new Set();
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        console.log(data.tags);
+
+        if (data.tags && Array.isArray(data.tags)) {
+          data.tags
+            .map(tag => tag.trim().toLowerCase())
+            .filter(tag => tag.startsWith('#') && tag.length > 1)
+            .forEach(tag => suggestionset.add(tag));
         }
-        const blob = await response.blob();
-        const objectUrl = URL.createObjectURL(blob);
-        return objectUrl;
-      } catch (error) {
-        console.error("Error fetching image:", error);
-        if (error.message.includes('429') && attempt < retries - 1) {
-          console.log("Rate limit hit, retrying...");
-          await new Promise((resolve) => setTimeout(resolve, delay));  // Retry delay
-        }
-      }
+      });
+
+      setalltags([...suggestionset]);
+    };
+
+    fetchtags();
+  }, []);
+
+
+
+
+
+  const handletaginput = (e) => {
+    const value = e.target.value;
+    settags(value);
+
+    const trimmedValue = value.trim().toLowerCase();
+
+    if (trimmedValue === '') {
+      setsuggestion([]);
+      return;
     }
 
+    // Optional: make match case-insensitive and partial
+    const filtered = alltags.filter(tag =>
+      tag.toLowerCase().includes(trimmedValue)
+    );
 
+    // Optional: sort alphabetically or by relevance
+    const sortedSuggestions = filtered
+      .sort((a, b) => a.localeCompare(b))
+      .slice(0, 5);
+
+    setsuggestion(sortedSuggestions);
   };
 
 
-  // Fetch user image as Blob when the component mounts or when auth changes
-  // This ensures that the user image is fetched only once and reused
-  useEffect(() => {
-    if (auth?.user?.photoURL) {
-      // Fetch and set image if URL is available
-      fetchImageAsBlob(auth.user.photoURL).then((objectUrl) => {
-        if (objectUrl) {
-          setUserImageUrl(objectUrl);
+  //function the choose the clicked tag from the suggestion
+  const handleSuggestionClick = (tag) => {
+    settags(tag);
+    setsuggestion([]);
+  };
+
+
+  //function to handle the search when we click the saerch button
+  const handleSearch = async () => {
+    try {
+      const searchTags = tags
+        .split(" ")
+        .map(tag => tag.trim().toLowerCase())
+        .filter(tag => tag.startsWith("#") && tag.length > 1);
+
+      const snapshot = await getDocs(collection(db, "questions"));
+
+      const matchedPosts = [];
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        if (data.tags && Array.isArray(data.tags)) {
+          const hasMatch = data.tags.some(tag => searchTags.includes(tag));
+          if (hasMatch) {
+            matchedPosts.push({ id: doc.id, ...data });
+          }
         }
       });
+      setposts(matchedPosts);
+    } catch (error) {
+      console.error("Search failed:", error);
     }
-  }, [auth?.user?.photoURL]);
+  };
 
 
-
-
-
-  const handleseacrch = (e) => { }
-
+  //normally fetching posts
   useEffect(() => {
+    const q = query(
+      collection(db, "questions"),
+    );
 
-    const fetchposts = async () => {
-      try {
-        const post = await axios.get("http://localhost:3000/questions/all");
-        setLoading(false);
-        setposts(post.data);
-      } catch (err) {
-        console.error("Error fetching posts:", err);
-        setLoading(false);
-      }
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedPosts = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
+      setposts(fetchedPosts);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error in real-time fetching:", error);
+      setLoading(false);
+    });
 
-    };
-    fetchposts();
+    return unsubscribe;
+
   }, [])
+
+
+  //fetching post by clicking on the ALL button
+  const handleall = () => {
+
+    const q = query(
+      collection(db, "questions"),
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedPosts = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setposts(fetchedPosts);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error in real-time fetching:", error);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  }
+
+
+  //fetching post by clicking on the new button
+  //using firebase SnapShot to fetch the data at realtime
+  const handlenew = () => {
+    const q = query(
+      collection(db, "questions"),
+      orderBy("created_at", "desc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedPosts = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setposts(fetchedPosts);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error in real-time fetching:", error);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  };
+
+
+  //fetching posts on clicking the popular button
+  const handlepopular = () => {
+    const q = query(
+      collection(db, "questions"),
+      orderBy("upvotes", "desc") // 🔥 sorts by upvotes descending
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedPosts = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setposts(fetchedPosts);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error in real-time fetching:", error);
+      setLoading(false);
+    });
+
+    return unsubscribe;
+  };
+
 
 
   // Function to handle posting stories
@@ -114,7 +242,10 @@ const RadditSystem = () => {
       userName: auth?.user?.displayName,
       headline: lowercasevalues.heading,
       description: lowercasevalues.text,
-      tags: lowercasevalues.tags.split(',').map(tag => tag.trim().toLowerCase()),
+      tags: lowercasevalues.tags
+        .split(' ') // split by space, not comma
+        .map(tag => tag.trim().toLowerCase())
+        .filter(tag => tag.startsWith('#') && tag.length > 1),
       // image_url: lowercasevalues.images ? URL.createObjectURL(lowercasevalues.images) : null, // Convert file to URL
       upvotes: 0,
       reported: false,
@@ -166,10 +297,9 @@ const RadditSystem = () => {
       <div className='main flex w-screen'>
         <div className=' flex flex-col w-[70vw] items-center'>      {/* Button Divs */}
           <div className='flex gap-5 m-10 '>
-            <Button className='!text-black' variant='outlined'>All</Button>
-            <Button className='!text-black' variant='outlined'>✨Popular</Button>
-            <Button className='!text-black' variant='outlined'>📋New</Button>
-            <Button className='!text-black' variant='outlined'>🔥Top</Button>
+            <Button className='!text-black' onClick={handleall} variant='outlined'>All</Button>
+            <Button className='!text-black' onClick={handlepopular} variant='outlined'>✨Popular</Button>
+            <Button className='!text-black' onClick={handlenew} variant='outlined'>📋New</Button>
           </div>
 
           {/* Post Containers */}
@@ -180,9 +310,8 @@ const RadditSystem = () => {
                 <HashLoader size={120} color="#8a3ab9" loading={loading} />
               </div>
             ) : (
-              posts.map((post, index) => {
-                console.log("Post Data:", post); // Debug log to check post data
-                return (
+              posts && posts.length > 0 ? (
+                posts.map((post, index) => (
                   <Post
                     key={index}
                     post_id={post.id}
@@ -193,30 +322,57 @@ const RadditSystem = () => {
                     img={post.photoURL}
                     name={post.userName}
                   />
-                );
-              })
+                ))
+              ) : (
+                <div className="text-center text-red-500 font-semibold text-lg mt-4">
+                  No posts available
+                </div>
+              )
             )}
+
 
           </div>
         </div>
         <div className=' w-[30vw] border-t-2 mt-10 border-l-2 gap-5  flex flex-col border-gray-400'>
 
           {/* searrch bar */}
-          <form className='w-full flex mt-5 flex-col items-center' onSubmit={handleseacrch}>
+          <form
+            className="w-full relative flex mt-5 flex-col items-center"
+          >
             <input
               type="text"
-              placeholder='Explore...'
-              className='w-[80%] mt-5  shadow-xl p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-4xl bg-[#e3d3fa] focus:ring-white focus:border-white'
-              autoComplete='off' />
+              value={tags}
+              onChange={handletaginput}
+              placeholder="Search tags... eg: #himachal"
+              className="w-[80%] mt-5 shadow-xl p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-4xl bg-[#e3d3fa] focus:ring-white focus:border-white"
+              autoComplete="off"
+            />
+
+            {suggestion.length > 0 && (
+              <ul
+                className="absolute top-full left-[10%] w-[80%] bg-white z-20 mt-2 rounded-md shadow-md border border-gray-200"
+              >
+                {suggestion.map((tag, idx) => (
+                  <li
+                    key={idx}
+                    onClick={() => handleSuggestionClick(tag)}
+                    className="p-2 text-sm hover:bg-gray-100 cursor-pointer"
+                  >
+                    {tag}
+                  </li>
+                ))}
+              </ul>
+            )}
           </form>
 
-          <button type='submit' onClick={handleseacrch} className='text-white w-[30%] mx-auto justify-center cursor-pointer shadow-xl bg-[#8a3ab9] px-2 py-2 rounded-3xl transform hover:scale-105 flex items-center gap-2'>Search <CiSearch /></button>
+
+          <button type='submit' onClick={handleSearch} className='text-white w-[30%] mx-auto justify-center cursor-pointer shadow-xl bg-[#8a3ab9] px-2 py-2 rounded-3xl transform hover:scale-105 flex items-center gap-2'>Search <CiSearch /></button>
 
           <div className='w-[80%] h-0.5 bg-gray-400 mx-auto my-5 rounded-full'></div>
 
           {/* for post */}
           <div className='w-full flex items-center gap-2'>
-            {auth?.user?.photoURL ? (<img src={userImageUrl} alt='user-image' className="w-10 h-10 rounded-full ml-9" />) : (<FaUser className='h-5' />)}
+            {auth?.user?.photoURL ? (<img src={auth.user.photoURL} alt='user-image' className="w-10 h-10 rounded-full ml-9" />) : (<FaUser className='h-10 ml-12' />)}
             <button onClick={() => setisopen(true)} className='w-[70%] hover:bg-gray-200 p-3 border cursor-pointer border-gray-400 rounded-3xl text-start'>Share your story...</button>
             {isopen && (
               <div className="fixed top-0 left-0 w-full h-full backdrop-blur-sm bg-black/30 bg-opacity-50 flex justify-center items-center z-50">
@@ -230,7 +386,7 @@ const RadditSystem = () => {
 
                   <Formik
                     initialValues={{
-                      heading: "", text: "", images: [], tags: []
+                      heading: "", text: "", images: [], tags: ""
                     }}
 
                     validate={values => {
@@ -319,12 +475,7 @@ const RadditSystem = () => {
                       </Form>
 
                     )}
-
-
-
                   </Formik>
-
-                  {/* Add your story input form or content here */}
                 </div>
               </div>
             )}
@@ -333,7 +484,6 @@ const RadditSystem = () => {
           <div className='w-full flex items-center justify-center mt-5'>
             <button className='px-4 py-2 text-white bg-[#8a3ab9] rounded-3xl cursor-pointer transition hover:scale-105 hover:font-bold'>Your Dashborad</button>
           </div>
-
         </div>
       </div>
 

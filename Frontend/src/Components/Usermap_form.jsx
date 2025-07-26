@@ -38,7 +38,7 @@ const Usermap_form = ({ onLocationSelect, setFieldValue, initialLat, initialLng 
                 (err) => {
                     console.error('Error watching location:', err);
                 },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
             );
         } else {
             console.log('Geolocation is not supported.');

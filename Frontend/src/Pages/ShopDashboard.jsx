@@ -28,59 +28,59 @@ const ShopDashboard = () => {
     };
 
     useEffect(() => {
-    if (!auth?.user?.uid) return;
+        if (!auth?.user?.uid) return;
 
-    const fetchData = async () => {
-        try {
-            const user_id = auth.user.uid;
+        const fetchData = async () => {
+            try {
+                const user_id = auth.user.uid;
 
-            // 1. Fetch owner data
-            const ownerDocRef = doc(db, 'owners', user_id);
-            const ownerSnap = await getDoc(ownerDocRef);
+                // 1. Fetch owner data
+                const ownerDocRef = doc(db, 'owners', user_id);
+                const ownerSnap = await getDoc(ownerDocRef);
 
-            if (!ownerSnap.exists()) {
-                console.warn("Owner document not found");
-                return;
-            }
+                if (!ownerSnap.exists()) {
+                    console.warn("Owner document not found");
+                    return;
+                }
 
-            const ownerDetails = ownerSnap.data();
-            setOwnerData(ownerDetails);
+                const ownerDetails = ownerSnap.data();
+                setOwnerData(ownerDetails);
 
-            // 2. Query restaurants for the current owner
-            const q = query(collection(db, 'restaurants'), where("added_by", "==", user_id));
+                // 2. Query restaurants for the current owner
+                const q = query(collection(db, 'restaurants'), where("added_by", "==", user_id));
 
-            const unsubscribe = onSnapshot(q, (snapshot) => {
-                const list = [];
+                const unsubscribe = onSnapshot(q, (snapshot) => {
+                    const list = [];
 
-                snapshot.docs.forEach((docSnap) => {
-                    const data = docSnap.data();
+                    snapshot.docs.forEach((docSnap) => {
+                        const data = docSnap.data();
 
-                    list.push({
-                        restaurant_id: docSnap.id,
-                        ...data,
-                        ownerData: {
-                            GST_number: ownerDetails.GST_number || 'NA',
-                            email_address: ownerDetails.email_address || 'NA',
-                            phone_number: ownerDetails.phone_number || 'NA',
-                            owner_name: ownerDetails.owner_name || 'NA',
-                            locality: data.locality || '',
-                            city: data.city || '',
-                        },
+                        list.push({
+                            restaurant_id: docSnap.id,
+                            ...data,
+                            ownerData: {
+                                GST_number: ownerDetails.GST_number || 'NA',
+                                email_address: ownerDetails.email_address || 'NA',
+                                phone_number: ownerDetails.phone_number || 'NA',
+                                owner_name: ownerDetails.owner_name || 'NA',
+                                locality: data.locality || '',
+                                city: data.city || '',
+                            },
+                        });
                     });
+
+                    setRestaurants(list);
                 });
 
-                setRestaurants(list);
-            });
+                return () => unsubscribe();
 
-            return () => unsubscribe();
+            } catch (err) {
+                console.error("Error fetching data:", err);
+            }
+        };
 
-        } catch (err) {
-            console.error("Error fetching data:", err);
-        }
-    };
-
-    fetchData();
-}, [auth?.user?.uid]);
+        fetchData();
+    }, [auth?.user?.uid]);
 
 
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -196,7 +196,15 @@ const ShopDashboard = () => {
                                         <StyledTableRow key={restaurant.restaurant_id}>
                                             <StyledTableCell>{restaurant.restaurant_id}</StyledTableCell>
                                             <StyledTableCell>
-                                                <img src={restaurant.images?.[0] || "/src/assets/default.jpg"} className="w-[70px] h-[70px] object-cover rounded-md" />
+                                                {restaurant.images && restaurant.images.length > 0 ? (
+                                                    <img
+                                                        src={restaurant.images[0] || "/src/assets/default.jpg"}
+                                                        className="w-[70px] h-[70px] object-cover rounded-md"
+                                                        alt="Restaurant"
+                                                    />
+                                                ) : (
+                                                    <p className='text-red-500'>No image available</p>
+                                                )}
                                             </StyledTableCell>
                                             <StyledTableCell>
                                                 <p><strong>Food:</strong> {restaurant.avg_food_quality || 0} ⭐</p>
