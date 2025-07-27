@@ -12,10 +12,12 @@ import Post from './Post';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-import { collection, getDocs, query, onSnapshot, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, onSnapshot, orderBy, limit, startAfter } from 'firebase/firestore';
 import { db } from '../../../src/register.js';
 import { HashLoader } from 'react-spinners';
 import { FaUser } from "react-icons/fa";
+import Footer from '../../Components/Footer';
+import { FaRegHeart, FaHeart } from 'react-icons/fa';
 
 const RadditSystem = () => {
 
@@ -295,7 +297,7 @@ const RadditSystem = () => {
 
       {/* put every thing in the main */}
       <div className='main flex w-screen'>
-        <div className=' flex flex-col w-[70vw] items-center'>      {/* Button Divs */}
+        <div className=' flex flex-col w-[70vw] h-[100vh] overflow-y-scroll custom-scrollbar items-center'>      {/* Button Divs */}
           <div className='flex gap-5 m-10 '>
             <Button className='!text-black' onClick={handleall} variant='outlined'>All</Button>
             <Button className='!text-black' onClick={handlepopular} variant='outlined'>✨Popular</Button>
@@ -333,7 +335,7 @@ const RadditSystem = () => {
 
           </div>
         </div>
-        <div className=' w-[30vw] border-t-2 mt-10 border-l-2 gap-5  flex flex-col border-gray-400'>
+        <div className=' w-[30vw] border-t-2 mt-2 border-l-2 gap-5  flex flex-col border-gray-400'>
 
           {/* searrch bar */}
           <form
@@ -484,9 +486,13 @@ const RadditSystem = () => {
           <div className='w-full flex items-center justify-center mt-5'>
             <button className='px-4 py-2 text-white bg-[#8a3ab9] rounded-3xl cursor-pointer transition hover:scale-105 hover:font-bold'>Your Dashborad</button>
           </div>
+
+
+   
+
         </div>
       </div>
-
+      <Footer />
     </div>
 
   )

@@ -140,7 +140,7 @@ const Home = () => {
         </div>
 
         {/* decoration */}
-        <div className="w-[90vw] max-w-7xl appear-apply h-[70vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8]  rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10 flex flex-col md:flex-row justify-center items-center overflow-hidden p-6">
+        <div className="w-[90vw] max-w-7xl  appear-apply h-[70vh] bg-gradient-to-br from-white via-[#f9f5ff] to-[#e5dcf8]  rounded-3xl shadow-2xl nunito mx-auto mt-10 mb-10 flex flex-col md:flex-row justify-center items-center overflow-hidden p-6">
           {/* Text Section */}
           <div className="w-full md:w-1/2 h-full flex flex-col justify-around px-4 py-4 space-y-3">
             <div className="h-1 w-full bg-[#8a3ab9] rounded-full"></div>

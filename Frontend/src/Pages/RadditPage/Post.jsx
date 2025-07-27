@@ -71,7 +71,7 @@ const Post = ({
 
 
     return (
-        <div className="flex flex-col w-[55vw] bg-white shadow-lg  transition-transform duration-300 hover:scale-[1.02] rounded-2xl p-6">
+        <div className="flex flex-col w-[55vw] bg-white shadow-lg appear-apply  transition-transform duration-300 hover:scale-[1.02] rounded-2xl p-6">
             {/* User Info */}
             <div className="flex items-center">
                 {img ? (

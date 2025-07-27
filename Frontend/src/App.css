@@ -25,3 +25,22 @@
     scale: 1;
   }
 }
+
+
+/* For Chrome, Edge, Safari */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #8a3ab9; /* Tailwind blue-500 */
+  border-radius: 4px;
+}
+
+/* Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #8a3ab9 #f1f1f1;
+}
