@@ -6,8 +6,7 @@ import Router from './router/Router';
 import { ToastContainer } from "react-toastify"
 import store, { useAppDispatch, useAppSelector } from './state/store';
 import { authenticate, setUser } from './state/auth/authSlice';
-import ItemLister from './Pages/Items/ItemLister';
-import RadditSystem from './Pages/RadditPage/RadditSystem';
+import ProfilePage from './Pages/ProfilePages/ProfilePage';
 
 function App() {
 
@@ -26,7 +25,6 @@ function App() {
 
   return (
     <>
-    
       <ToastContainer />
       <Router />
     </>

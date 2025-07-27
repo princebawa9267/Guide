@@ -13,6 +13,7 @@ import ShopDashboard from '../Pages/ShopDashboard'
 import RadditSystem from '../Pages/RadditPage/RadditSystem'
 import PrivateRoute from './PrivateRoute'
 import { useAppSelector } from '../state/store'
+import ProfilePage from '../Pages/ProfilePages/ProfilePage'
 
 const Router = () => {
 
@@ -42,6 +43,16 @@ const Router = () => {
         <Route path="/listyourshop/dashbord" element={
           <PrivateRoute>
             <ShopDashboard />
+          </PrivateRoute>
+          }></Route>
+          <Route path="/profile" element={
+          <PrivateRoute>
+            <ProfilePage/>
+          </PrivateRoute>
+          }></Route>
+          <Route path="/TouristHub" element={
+          <PrivateRoute>
+            <RadditSystem />
           </PrivateRoute>
           }></Route>
       </Routes>

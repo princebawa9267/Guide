@@ -135,7 +135,7 @@ const Navbar = () => {
                             </div>
                             <ul className="py-2" aria-labelledby="user-menu-button">
                                 <li>
-                                    <NavLink to="#" className="block px-4 py-2 hover:text-[#8a3ab9] hover:font-bold text-sm text-gray-500">User Dashboard</NavLink>
+                                    <NavLink to="/profile" className="block px-4 py-2 hover:text-[#8a3ab9] hover:font-bold text-sm text-gray-500" >User Dashboard</NavLink>
                                 </li>
                                 <li>
                                     <Button variant="contained" color='error' className='transition hover:scale-105' sx={{ textTransform: "none" }} onClick={logout}>Logout</Button>
