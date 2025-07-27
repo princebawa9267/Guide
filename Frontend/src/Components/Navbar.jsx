@@ -42,43 +42,39 @@ const Navbar = () => {
     }
 
     // Conversion on image to Blob so error does not occur with image URL
-    const fetchImageAsBlob = async (imageUrl, retries = 3, delay = 1000) => {
+    // const fetchImageAsBlob = async (imageUrl, retries = 3, delay = 1000) => {
 
-        for (let attempt = 0; attempt < retries; attempt++) {
-            try {
-                const response = await fetch(imageUrl);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch image');
-                }
-                const blob = await response.blob();
-                const objectUrl = URL.createObjectURL(blob);
-                return objectUrl;
-            } catch (error) {
-                console.error("Error fetching image:", error);
-                if (error.message.includes('429') && attempt < retries - 1) {
-                    console.log("Rate limit hit, retrying...");
-                    await new Promise((resolve) => setTimeout(resolve, delay));  // Retry delay
-                }
-            }
-        }
+    //     for (let attempt = 0; attempt < retries; attempt++) {
+    //         try {
+    //             const response = await fetch(imageUrl);
+    //             if (!response.ok) {
+    //                 throw new Error('Failed to fetch image');
+    //             }
+    //             const blob = await response.blob();
+    //             const objectUrl = URL.createObjectURL(blob);
+    //             return objectUrl;
+    //         } catch (error) {
+    //             console.error("Error fetching image:", error);
+    //             if (error.message.includes('429') && attempt < retries - 1) {
+    //                 console.log("Rate limit hit, retrying...");
+    //                 await new Promise((resolve) => setTimeout(resolve, delay));  // Retry delay
+    //             }
+    //         }
+    //     }
 
 
-    };
+    // };
 
-    useEffect(() => {
-        let objectUrl;
-
-        const fetchImage = async () => {
-            objectUrl = await fetchImageAsBlob(auth.user.photoURL);
-            if (objectUrl) setUserImageUrl(objectUrl);
-        };
-
-        if (auth?.user?.photoURL) fetchImage();
-
-        return () => {
-            if (objectUrl) URL.revokeObjectURL(objectUrl);
-        };
-    }, [auth?.user?.photoURL]);
+    // useEffect(() => {
+    //     if (auth?.user?.photoURL) {
+    //         // Fetch and set image if URL is available
+    //         fetchImageAsBlob(auth.user.photoURL).then((objectUrl) => {
+    //             if (objectUrl) {
+    //                 setUserImageUrl(objectUrl);
+    //             }
+    //         });
+    //     }
+    // }, [auth?.user?.photoURL]);
 
     // close dropdown on outside click
     useEffect(() => {
@@ -120,7 +116,7 @@ const Navbar = () => {
                                     >
                                         <span className="sr-only">Open user menu</span>
                                         {
-                                            (auth?.user?.photoURL) ? (<img src={userImageUrl} alt='user-image' className="w-10 h-10 rounded-full" />) : (<FaUser className='h-5' />)
+                                            (auth?.user?.photoURL) ? (<img src={auth?.user?.photoURL} alt='user-image' className="w-10 h-10 rounded-full" />) : (<FaUser className='h-5' />)
                                         }
                                     </button>
                                 </div>

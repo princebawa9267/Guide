@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import { FaUser } from "react-icons/fa";
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { useAppSelector } from '../../state/store';
+import 'react-toastify/dist/ReactToastify.css';
 import dayjs from 'dayjs';// Import dayjs for date formatting its an open-source JavaScript library for parsing, validating, manipulating, and formatting dates.
 
 import {
@@ -11,48 +16,59 @@ import {
 import { Divider, ListItemIcon } from '@mui/material';
 
 const Post = ({
+    post_id = null,
     heading = 'Untitled Post',
     description = 'No description provided.',
     created_at = 'Unknown Date',
     postLiked = false,
-    postDisLiked = false,
     likeCount = 0,
-    dislikeCount = 0,
     img = null, // URL of user image
     name = 'Anonymous', // User name
+    visiblecomments,
+    togglecommetsfun,
+
 }) => {
     const [like, setLike] = useState(postLiked);
-    const [dislike, setDislike] = useState(postDisLiked);
     const [likes, setLikes] = useState(likeCount);
-    const [dislikes, setDislikes] = useState(dislikeCount);
+    const { auth } = useAppSelector(store => store);
 
-    const handleLike = () => {
-        if (like) {
-            setLike(false);
-            setLikes(likes - 1);
-        } else {
-            setLike(true);
-            setLikes(likes + 1);
-            if (dislike) {
-                setDislike(false);
-                setDislikes(dislikes - 1);
+    const handleLike = async () => {
+        toast.loading('Processing your like...', { toastId: 'likeToast' });
+
+        try {
+            const response = await axios.post(`http://localhost:3000/questions/${post_id}/upvote`, {
+                user_id: auth?.user?.uid,
+            });
+
+            if (response.status === 200) {
+                setLike(!like);
+                setLikes(prev => like ? prev - 1 : prev + 1);
+                toast.update('likeToast', {
+                    render: 'Like processed successfully!',
+                    type: 'success',
+                    isLoading: false,
+                    autoClose: 3000
+                });
+            } else {
+                toast.update('likeToast', {
+                    render: 'Failed to process like may be you alredy liked it',
+                    type: 'error',
+                    isLoading: false,
+                    autoClose: 3000
+                });
             }
+        } catch (error) {
+            console.error('Error processing like:', error);
+            toast.update('likeToast', {
+                render: 'Error processing like may be you alredy liked it',
+                type: 'error',
+                isLoading: false,
+                autoClose: 3000
+            });
         }
     };
 
-    const handleDislike = () => {
-        if (dislike) {
-            setDislike(false);
-            setDislikes(dislikes - 1);
-        } else {
-            setDislike(true);
-            setDislikes(dislikes + 1);
-            if (like) {
-                setLike(false);
-                setLikes(likes - 1);
-            }
-        }
-    };
+
 
     return (
         <div className="flex flex-col w-[55vw] bg-white shadow-lg  transition-transform duration-300 hover:scale-[1.02] rounded-2xl p-6">
@@ -105,21 +121,9 @@ const Post = ({
                     <span className="text-sm text-gray-600">{likes}</span>
                 </div>
 
-                {/* Dislikes */}
-                <div className="flex items-center gap-2">
-                    <ListItemIcon onClick={handleDislike} className="cursor-pointer">
-                        {dislike ? (
-                            <ThumbDown className="text-red-500" />
-                        ) : (
-                            <ThumbDownOutlined className="text-gray-500 hover:text-red-500" />
-                        )}
-                    </ListItemIcon>
-                    <span className="text-sm text-gray-600">{dislikes}</span>
-                </div>
-
                 {/* Comment */}
                 <div className="flex items-center gap-1 cursor-pointer">
-                    <Comment className="text-gray-500 hover:text-blue-500" />
+                    <Comment  className="text-gray-500 hover:text-blue-500" />
                 </div>
             </div>
         </div>

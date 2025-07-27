@@ -49,7 +49,7 @@ router.get('/:id', async (req, res) => {
 // Create a new question
 router.post('/', async (req, res) => {
   try {
-    const { user_id, headline,photoURL,userName, description, tags = [], image_url = null } = req.body;
+    const { user_id, headline, photoURL, userName, description, tags = [], image_url = null } = req.body;
 
     if (!user_id || !headline) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -102,30 +102,32 @@ router.post('/:id/upvote', async (req, res) => {
     const { user_id } = req.body;
     const docRef = db.collection('questions').doc(req.params.id);
     const doc = await docRef.get();
-    if (!doc.exists) return res.status(404).json({ error: 'Not found' });
+
+    if (!doc.exists) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
 
     const data = doc.data();
     const upvoted = data.upvoted_by || [];
 
-    let update;
+    //  If user has already upvoted, don't allow again
     if (upvoted.includes(user_id)) {
-      update = {
-        upvotes: data.upvotes - 1,
-        upvoted_by: upvoted.filter(id => id !== user_id)
-      };
-    } else {
-      update = {
-        upvotes: data.upvotes + 1,
-        upvoted_by: [...upvoted, user_id]
-      };
+      return res.status(400).json({ message: 'You have already upvoted this post.' });
     }
 
+    const update = {
+      upvotes: (data.upvotes || 0) + 1,
+      upvoted_by: [...upvoted, user_id]
+    };
+
     await docRef.update(update);
-    res.json({ message: 'Upvote status updated' });
+
+    res.json({ message: 'Upvoted successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // Report question
 router.post('/:id/report', async (req, res) => {

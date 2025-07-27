@@ -76,6 +76,8 @@ const Selected_item_map = ({ latitude, longitude }) => {
     useEffect(() => {
         let watchId;
 
+        // Watch user's geolocation
+
         if ('geolocation' in navigator) {
             watchId = navigator.geolocation.watchPosition(
                 (pos) => {
@@ -86,7 +88,7 @@ const Selected_item_map = ({ latitude, longitude }) => {
                 (err) => {
                     console.error('Error watching location:', err);
                 },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
             );
         } else {
             console.log('Geolocation is not supported.');

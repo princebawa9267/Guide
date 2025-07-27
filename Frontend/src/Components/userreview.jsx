@@ -18,7 +18,8 @@ const Userreview = () => {
     
     try{
     const response=await axios.get(`http://localhost:3000/reviews/${user_id}/reviews`)
-    console.log(auth);
+    console.log(response.data);
+    // Sort reviews by upvotes in descending order
     const sortedreviws = response.data.sort((a, b) => b.upvotes - a.upvotes )
     setReviews(sortedreviws);
     setloading(false);
