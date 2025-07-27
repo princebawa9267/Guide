@@ -18,6 +18,7 @@ import { HashLoader } from 'react-spinners';
 import { FaUser } from "react-icons/fa";
 import Footer from '../../Components/Footer';
 import { FaRegHeart, FaHeart } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const RadditSystem = () => {
 
@@ -26,6 +27,7 @@ const RadditSystem = () => {
   const [suggestion, setsuggestion] = useState([]);       // array for suggestions
   const [tags, settags] = useState('');                  // input text
   const [alltags, setalltags] = useState([]);            // all tags from Firestore
+  const navigate=useNavigate();
 
   // State to manage user reviews
   const { auth } = useAppSelector(store => store);
@@ -224,6 +226,12 @@ const RadditSystem = () => {
 
     return unsubscribe;
   };
+
+
+
+  const handledashboard=()=>{
+   navigate("/profile")
+  }
 
 
 
@@ -484,7 +492,7 @@ const RadditSystem = () => {
           </div>
 
           <div className='w-full flex items-center justify-center mt-5'>
-            <button className='px-4 py-2 text-white bg-[#8a3ab9] rounded-3xl cursor-pointer transition hover:scale-105 hover:font-bold'>Your Dashborad</button>
+            <button onClick={handledashboard} className='px-4 py-2 text-white bg-[#8a3ab9] rounded-3xl cursor-pointer transition hover:scale-105 hover:font-bold'>Your Dashborad</button>
           </div>
 
 

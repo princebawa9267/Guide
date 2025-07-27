@@ -13,6 +13,7 @@ import ShopDashboard from '../Pages/ShopDashboard'
 import RadditSystem from '../Pages/RadditPage/RadditSystem'
 import PrivateRoute from './PrivateRoute'
 import { useAppSelector } from '../state/store'
+import ProfilePage from '../Pages/ProfilePages/ProfilePage'
 
 const Router = () => {
 
@@ -27,29 +28,33 @@ const Router = () => {
         <Route path='/signup' element={<Signup />}></Route>
         {/* <Route */}
         <Route path='/contribute' element={
-          <PrivateRoute>
-            <Contribute />
-          </PrivateRoute>
-        }></Route>
-        <Route path='/user-verification' element={<UserVerification />}></Route>
-        <Route path='/searched-location' element={<LocationSearchPage />}></Route>
+            <PrivateRoute>
+              <Contribute/>
+            </PrivateRoute>
+          }></Route>
+        <Route path='/user-verification' element={<UserVerification/>}></Route>
+        <Route path='/searched-location' element={<LocationSearchPage/>}></Route>
         <Route path="/selected-item/:restaurantId" element={<Selected_item />} />
         <Route path="/listyourshop/register" element={
           <PrivateRoute>
             <Shop_register />
           </PrivateRoute>
-        } />
+          }></Route>
         <Route path="/listyourshop/dashbord" element={
           <PrivateRoute>
             <ShopDashboard />
           </PrivateRoute>
-        } />
-
-        <Route path="/TouristHub" element={
+          }></Route>
+          <Route path="/profile" element={
+          <PrivateRoute>
+            <ProfilePage/>
+          </PrivateRoute>
+          }></Route>
+          <Route path="/TouristHub" element={
           <PrivateRoute>
             <RadditSystem />
           </PrivateRoute>
-        } />
+          }></Route>
       </Routes>
 
     </div>

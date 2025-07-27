@@ -25,6 +25,7 @@ router.post("/addedbyowner", async (req, res) => {
       varification_status, 
       locality,
       city,
+      video,
       GST_number,
       longitude,
       latitude,
@@ -34,7 +35,7 @@ router.post("/addedbyowner", async (req, res) => {
 
     //Required field validation
     if (
-      !name_of_restaurant || !owner_name || !user_id ||
+      !name_of_restaurant || !owner_name || !user_id ||!video||
       !open_hours || !longitude || !locality || !city || !latitude || images.length === 0
     ) {
       return res.status(400).json({
@@ -111,6 +112,7 @@ router.post("/addedbyowner", async (req, res) => {
       city,
       GST_number,
       longitude,
+      video,
       latitude,
       open_hours,
       images,

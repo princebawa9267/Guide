@@ -4,10 +4,9 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Router from './router/Router';
 import { ToastContainer } from "react-toastify"
-import { useAppDispatch } from './state/store';
+import store, { useAppDispatch, useAppSelector } from './state/store';
 import { authenticate, setUser } from './state/auth/authSlice';
-import ItemLister from './Pages/Items/ItemLister';
-import RadditSystem from './Pages/RadditPage/RadditSystem';
+import ProfilePage from './Pages/ProfilePages/ProfilePage';
 
 function App() {
 
@@ -25,12 +24,10 @@ function App() {
 
 
   return (
-    <div className='realative'>
+    <>
       <ToastContainer />
       <Router />
-      {/* <RadditSystem /> */}
-      {/* <ItemLister/> */}
-    </div>
+    </>
   )
 }
 

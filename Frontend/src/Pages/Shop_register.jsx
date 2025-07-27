@@ -17,17 +17,22 @@ import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from "react-router-dom";
 import { doc, getDoc, query, where, onSnapshot } from "firebase/firestore";
+import { IoMdClose } from 'react-icons/io';
 
 
 
 
 const Shop_register = () => {
 
+    const [videoURL, setVideoURL] = useState("");
     const [markedposition, setmarkedposition] = useState(null);
     const [openingTime, setOpeningTime] = useState('');
     const [closingTime, setClosingTime] = useState('');
     const [openhours, setopenhours] = useState('');
     const navigate = useNavigate();
+    //inorder to take user video as url for varification
+    const [videoFile, setVideoFile] = useState(null);
+    const [videoPreview, setVideoPreview] = useState(null);
 
 
     const [initialValues, setInitialValues] = useState({
@@ -43,6 +48,7 @@ const Shop_register = () => {
         phone_number: "",
         owner_name: "",
         images: [],
+        video: ""
     });
 
     const location = useLocation();
@@ -53,7 +59,7 @@ const Shop_register = () => {
     const { auth } = useAppSelector(store => store);
 
     useEffect(() => {
-        // ⛔️ Prevent running if there's no ID (i.e. user is adding a new shop)
+        // Prevent running if there's no ID (i.e. user is adding a new shop)
         if (!restaurantIdFromURL) {
             console.log("New shop registration, no restaurant ID.");
             return;
@@ -84,6 +90,7 @@ const Shop_register = () => {
                         phone_number: ownerData.phone_number || "",
                         owner_name: ownerData.owner_name || "",
                         images: ownerData.images || [],
+                        video: ownerData.video || ""
                     });
 
                     // Set map position
@@ -138,11 +145,12 @@ const Shop_register = () => {
             open_hours: lowercaseValues.open_hours,
             user_id: auth?.user?.uid || "",
             images: lowercaseValues.images || [], // ✅ fallback for safety
+            video: lowercaseValues.video || "", 
             verification_status: false,
         };
 
         try {
-            const response = await axios.post('http://localhost:3000/restaurants/addedbyowner', payload); // ✅ FIXED: double slashes removed
+            const response = await axios.post('http://localhost:3000/restaurants/addedbyowner', payload);
 
             toast.update("submittoast", {
                 render: "Shop registered successfully! 🎉",
@@ -167,6 +175,56 @@ const Shop_register = () => {
         } finally {
             setSubmitting(false);
         }
+    };
+
+
+
+    //function to handle user uplod video with claudnary
+    const handlevideo = async (setFieldValue) => {
+        if (!videoFile) return;
+        toast.loading("uploading video", { toastId: "submitvideo" })
+
+        const formdata = new FormData();
+        formdata.append("file", videoFile);
+        formdata.append("upload_preset", "shop videos for varification");
+
+        try {
+            const res = await axios.post(
+                "https://api.cloudinary.com/v1_1/dbvy9i1sq/video/upload",
+                formdata
+            );
+            const videoLink = res.data.secure_url;
+            setVideoURL(videoLink);
+            setFieldValue("video", videoLink);
+            toast.update("submitvideo", {
+                render: "uploaded",
+                type: "success",
+                isLoading: false,
+                autoClose: 3000,
+            })
+        } catch (error) {
+            console.error("Upload failed:", error);
+            toast.update("submitvideo", {
+                render: error || "Failed to upload ",
+                type: "error",
+                isLoading: false,
+                autoClose: 3000,
+            })
+        }
+    };
+
+    //funaction for clear video option
+    const handleVideoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setVideoFile(file);
+            setVideoPreview(URL.createObjectURL(file)); // preview URL
+        }
+    };
+
+    const handleClearVideo = () => {
+        setVideoFile(null);
+        setVideoPreview(null);
     };
 
 
@@ -236,6 +294,9 @@ const Shop_register = () => {
                         }
                         if (!values.city) {
                             errors.city = 'Required';
+                        }
+                        if (!values.video) {
+                            errors.video = 'Required';
                         }
                         if (!values.owner_name) {
                             errors.owner_name = 'Required';
@@ -488,6 +549,49 @@ const Shop_register = () => {
                                         Set
                                     </button>
                                 </div>
+                            </label>
+
+
+                            <label className='flex flex-col justify-center gap-2 w-full m-3 p-4 cursor-pointer rounded-3xl text-xl bg-white shadow-xl hover:shadow-2xl transition-shadow duration-300'>
+                                <span className="text-[#8a3ab9] font-semibold tracking-wide">
+                                    Video For Verification:
+                                </span>
+
+                                {/* File input shown only when no video selected */}
+                                {!videoFile && (
+                                    <input
+                                        type="file"
+                                        accept="video/*"
+                                        onChange={handleVideoChange}
+                                        className="mt-2"
+                                    />
+                                )}
+
+                                {/* Preview with clear button */}
+                                {videoFile && (
+                                    <div className="relative w-full mt-2">
+                                        <video controls src={videoPreview} className="w-full rounded-lg mb-2" />
+                                        <button
+                                            onClick={handleClearVideo}
+                                            type="button"
+                                            className="absolute top-2 right-2 cursor-pointer bg-white text-red-600 p-1 rounded-full shadow"
+                                        >
+                                            <IoMdClose size={20} />
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Upload Button */}
+                                <button
+                                    onClick={() => handlevideo(setFieldValue)}
+                                    type="button"
+                                    disabled={!videoFile}
+                                    className="bg-blue-600 text-white px-4 py-2 mt-2 rounded cursor-pointer hover:bg-blue-700 disabled:bg-gray-400"
+                                >
+                                    Upload Video
+                                </button>
+
+                                <ErrorMessage name="video" component="div" className="text-red-500 text-sm" />
                             </label>
 
 

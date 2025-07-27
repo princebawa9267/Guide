@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect,useRef } from 'react';
 import { FaUser } from "react-icons/fa";
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -31,6 +31,19 @@ const Post = ({
     const [like, setLike] = useState(postLiked);
     const [likes, setLikes] = useState(likeCount);
     const { auth } = useAppSelector(store => store);
+
+    const ref = useRef(null);
+    const [visible, setVisible] = useState(false);
+
+    useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
 
     const handleLike = async () => {
         toast.loading('Processing your like...', { toastId: 'likeToast' });
@@ -71,7 +84,7 @@ const Post = ({
 
 
     return (
-        <div className="flex flex-col w-[55vw] bg-white shadow-lg appear-apply  transition-transform duration-300 hover:scale-[1.02] rounded-2xl p-6">
+        <div ref={ref} className={`flex scroll-fade-in ${visible ? 'visible' : ''} flex-col w-[55vw] bg-white shadow-lg  transition-transform duration-300 hover:scale-[1.02] rounded-2xl p-6`}>
             {/* User Info */}
             <div className="flex items-center">
                 {img ? (
@@ -123,7 +136,7 @@ const Post = ({
 
                 {/* Comment */}
                 <div className="flex items-center gap-1 cursor-pointer">
-                    <Comment  className="text-gray-500 hover:text-blue-500" />
+                    <Comment className="text-gray-500 hover:text-blue-500" />
                 </div>
             </div>
         </div>
